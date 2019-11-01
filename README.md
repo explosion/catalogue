@@ -2,7 +2,7 @@
 
 # catalogue: Super lightweight function registries for your library
 
-Catalogue is a tiny, zero-dependencies library that makes it easy to **add
+`catalogue` is a tiny, zero-dependencies library that makes it easy to **add
 function (or object) registries** to your code. Function registries are helpful
 when you have objects that need to be both easily serializable and fully
 customizable. Instead of passing a function into your object, you pass in an
@@ -73,28 +73,27 @@ load_data(data, loader_id="custom_loader")
 
 Sure, that's the more classic callback approach. Instead of a string ID,
 `load_data` could also take a function, in which case you wouldn't need a
-package like this.
-
-Catalogue helps you when you need to produce a serializable record of which
-functions were passed in. For instance, you might want to write a log message,
-or save a config to load back your object later. With catalogue, your functions
-can be parameterised by strings, so logging and serialization remains easy --- 
-while still giving you full extensibility.
+package like this. `catalogue` helps you when you need to produce a serializable
+record of which functions were passed in. For instance, you might want to write
+a log message, or save a config to load back your object later. With
+`catalogue`, your functions can be parameterized by strings, so logging and
+serialization remains easy – while still giving you full extensibility.
 
 #### How do I make sure all of the registration decorators have run?
 
 Decorators normally run when modules are imported. Relying on this side-effect
-can sometimes lead to confusion, especially if there's no other reason
-the module would be imported. One solution is to use [entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points).
+can sometimes lead to confusion, especially if there's no other reason the
+module would be imported. One solution is to use
+[entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points).
 
-For instance, in spaCy we're starting to use function registries to make
-the pipeline components much more customisable. Let's say one user,Jo,
-develops a better tagging model using new machine learning research.
-End-users of Jo's package should be able to write `spacy.load("jo_tagging_model")`.
-They shouldn't need to remember to write `import jos_tagged_model` first,
-just to run the function registries as a side-effect. With entry-points, the
-registration happens at install time --- so you don't need to rely on the
-import side-effects.
+For instance, in [spaCy](https://spacy.io) we're starting to use function
+registries to make the pipeline components much more customizable. Let's say one
+user, Jo, develops a better tagging model using new machine learning research.
+End-users of Jo's package should be able to write
+`spacy.load("jo_tagging_model")`. They shouldn't need to remember to write
+`import jos_tagged_model` first, just to run the function registries as a
+side-effect. With entry points, the registration happens at install time – so
+you don't need to rely on the import side-effects.
 
 ## 🎛 API
 
