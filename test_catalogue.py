@@ -36,30 +36,30 @@ def test_get_all():
     catalogue._set(("a", "b", "d"), "test")
     catalogue._set(("a", "b"), "test")
     catalogue._set(("b", "a"), "test")
-    all_items = catalogue.get_all(("a", "b"))
+    all_items = catalogue._get_all(("a", "b"))
     assert len(all_items) == 3
     assert ("a", "b", "c") in all_items
     assert ("a", "b", "d") in all_items
     assert ("a", "b") in all_items
-    all_items = catalogue.get_all(("a", "b", "c"))
+    all_items = catalogue._get_all(("a", "b", "c"))
     assert len(all_items) == 1
     assert ("a", "b", "c") in all_items
-    assert len(catalogue.get_all(("a", "b", "c", "d"))) == 0
+    assert len(catalogue._get_all(("a", "b", "c", "d"))) == 0
 
 
 def test_create_single_namespace():
-    register_test, get_test = catalogue.create("test")
+    test_registry = catalogue.create("test")
     assert catalogue.REGISTRY == {}
 
-    @register_test("a")
+    @test_registry.register("a")
     def a():
         pass
 
     def b():
         pass
 
-    register_test("b", func=b)
-    items = get_test()
+    test_registry.register("b", func=b)
+    items = test_registry.get_all()
     assert len(items) == 2
     assert items["a"] == a
     assert items["b"] == b
@@ -70,19 +70,19 @@ def test_create_single_namespace():
 
     with pytest.raises(TypeError):
         # The decorator only accepts one argument
-        @register_test("x", "y")
+        @test_registry.register("x", "y")
         def x():
             pass
 
 
 def test_create_multi_namespace():
-    register_test, get_test = catalogue.create("x", "y")
+    test_registry = catalogue.create("x", "y")
 
-    @register_test("z")
+    @test_registry.register("z")
     def z():
         pass
 
-    items = get_test()
+    items = test_registry.get_all()
     assert len(items) == 1
     assert items["z"] == z
     assert catalogue.check_exists("x", "y", "z")

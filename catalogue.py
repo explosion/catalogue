@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from collections import OrderedDict
-import functools
 import sys
 
 if sys.version_info[0] == 2:
@@ -24,9 +23,57 @@ def create(*namespace):
     """
     if check_exists(*namespace):
         raise RegistryError("Namespace already exists: {}".format(namespace))
-    setter = functools.partial(register, namespace)
-    getter = functools.partial(get, namespace)
-    return setter, getter
+    return Registry(namespace)
+
+
+class Registry(object):
+    def __init__(self, namespace):
+        """Initialize a new registry.
+
+        namespace (Tuple[str]): The namespace.
+        RETURNS (Registry): The newly created object.
+        """
+        self.namespace = namespace
+
+    def register(self, name, **kwargs):
+        """Register a function for a given namespace.
+
+        name (str): The name to register under the namespace.
+        func (Any): Optional function to register (if not used as decorator).
+        RETURNS (Callable): The decorator.
+        """
+
+        def do_registration(func):
+            _set(list(self.namespace) + [name], func)
+            return func
+
+        func = kwargs.get("func")
+        if func is not None:
+            return do_registration(func)
+        return do_registration
+
+    def get(self, name):
+        """Get the registered function for a given name.
+
+        name (str): The name.
+        RETURNS (Any): The registered function.
+        """
+        return _get(list(self.namespace) + [name])
+
+    def get_all(self):
+        """Get a all functions for a given namespace.
+
+        namespace (Tuple[str]): The namespace to get.
+        RETURNS (Dict[str, Any]): The functions, keyed by name.
+        """
+        global REGISTRY
+        result = OrderedDict()
+        for keys, value in REGISTRY.items():
+            if len(self.namespace) == len(keys) - 1 and all(
+                self.namespace[i] == keys[i] for i in range(len(self.namespace))
+            ):
+                result[keys[-1]] = value
+        return result
 
 
 def check_exists(*namespace):
@@ -36,61 +83,6 @@ def check_exists(*namespace):
     RETURNS (bool): Whether the namespace exists.
     """
     return namespace in REGISTRY
-
-
-def register(namespace, name, **kwargs):
-    """Register a function for a given namespace. Used in catalogue.create as
-    a partial function (with the given namespace applied).
-
-    namespace (Tuple[str]): The namespace to register.
-    name (str): The name to register under the namespace.
-    func (Any): Optional function to register (if not used as decorator).
-    RETURNS (Callable): The decorator.
-    """
-
-    def do_registration(func):
-        _set(list(namespace) + [name], func)
-        return func
-
-    func = kwargs.get("func")
-    if func is not None:
-        return do_registration(func)
-    return do_registration
-
-
-def get(namespace):
-    """Get a all functions for a given namespace. Used in catalogue.create as a
-    partial function (with the given namespace applied).
-
-    namespace (Tuple[str]): The namespace to get.
-    RETURNS (Dict[str, Any]): The functions, keyed by name.
-    """
-    global REGISTRY
-    result = OrderedDict()
-    for keys, value in REGISTRY.items():
-        if len(namespace) == len(keys) - 1 and all(
-            namespace[i] == keys[i] for i in range(len(namespace))
-        ):
-            result[keys[-1]] = value
-    return result
-
-
-def get_all(namespace):
-    """Get all matches for a given namespace, e.g. ("a", "b", "c") and
-    ("a", "b") for namespace ("a", "b").
-
-    namespace (Tuple[str]): The namespace.
-    RETURNS (Dict[Tuple[str], Any]): All entries for the namespace, keyed
-        by their full namespaces.
-    """
-    global REGISTRY
-    result = OrderedDict()
-    for keys, value in REGISTRY.items():
-        if len(namespace) <= len(keys) and all(
-            namespace[i] == keys[i] for i in range(len(namespace))
-        ):
-            result[keys] = value
-    return result
 
 
 def _get(namespace):
@@ -108,6 +100,24 @@ def _get(namespace):
         err = "Can't get namespace {} (not in registry)".format(namespace)
         raise RegistryError(err)
     return REGISTRY[namespace]
+
+
+def _get_all(namespace):
+    """Get all matches for a given namespace, e.g. ("a", "b", "c") and
+    ("a", "b") for namespace ("a", "b").
+
+    namespace (Tuple[str]): The namespace.
+    RETURNS (Dict[Tuple[str], Any]): All entries for the namespace, keyed
+        by their full namespaces.
+    """
+    global REGISTRY
+    result = OrderedDict()
+    for keys, value in REGISTRY.items():
+        if len(namespace) <= len(keys) and all(
+            namespace[i] == keys[i] for i in range(len(namespace))
+        ):
+            result[keys] = value
+    return result
 
 
 def _set(namespace, func):

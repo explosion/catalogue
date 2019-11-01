@@ -36,31 +36,30 @@ data types, but you want to allow the user to easily add their own. Using
 # YOUR PACKAGE
 import catalogue
 
-register_loader, get_loaders = catalogue.create("your_package", "loaders")
+loaders = catalogue.create("your_package", "loaders")
 ```
 
-This gives you a `register_loader` decorator that your users can import and
+This gives you a `loaders.register` decorator that your users can import and
 decorate their custom loader functions with.
 
 ```python
 # USER CODE
-from your_package import register_loader
+from your_package import loaders
 
-@register_loader("custom_loader")
+@loaders.register("custom_loader")
 def custom_loader(data):
     # Load something here...
     return data
 ```
 
 The decorated function will be registered automatically and in your package,
-you'll be able to access it by calling the getter function returned by
-`catalogue.create` – in this case, `get_loaders`.
+you'll be able to access all loaders by calling `loaders.get_all`.
 
 ```python
 # YOUR PACKAGE
 def load_data(data, loader_id):
-    all_loaders = get_loaders()  # {"custom_loader": custom_loader}
-    loader = all_loaders[loader]
+    print("All loaders:", loaders.get_all()) # {"custom_loader": <custom_loader>}
+    loader = loaders.get(loader)
     return loader(data)
 ```
 
@@ -110,21 +109,89 @@ you don't need to rely on the import side-effects.
 Create a new registry for a given namespace. Returns a setter function that can
 be used as a decorator or called with a name and `func` keyword argument.
 
-| Argument     | Type            | Description                                                                                 |
-| ------------ | --------------- | ------------------------------------------------------------------------------------------- |
-| `*namespace` | str             | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.                                |
-| **RETURNS**  | Tuple[Callable] | The setter (decorator to register functions) and getter (to retrieve registered functions). |
+| Argument     | Type       | Description                                                            |
+| ------------ | ---------- | ---------------------------------------------------------------------- |
+| `*namespace` | str        | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.           |
+| **RETURNS**  | `Registry` | The `Registry` object with methods to register and retrieve functions. |
 
 ```python
-register_architecture, get_architectures = catalogue.create("spacy", "architectures")
+architectures = catalogue.create("spacy", "architectures")
 
 # Use as decorator
-@register_architecture("custom_architecture")
+@architectures.register("custom_architecture")
 def custom_architecture():
     pass
 
 # Use as regular function
-register_architecture("custom_architecture", func=custom_architecture)
+architectures.register("custom_architecture", func=custom_architecture)
+```
+
+### <kbd>class</kbd> `Registry`
+
+The registry object that can be used to register and retrieve functions. It's
+usually created internally when you call `catalogue.create`.
+
+#### <kbd>method</kbd> `Registry.__init__`
+
+Initialize a new registry.
+
+| Argument    | Type       | Description                                                  |
+| ----------- | ---------- | ------------------------------------------------------------ |
+| `namespace` | Tuple[str] | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`. |
+| **RETURNS** | `Registry` | The newly created object.                                    |
+
+```python
+architectures = Registry(("spacy", "architectures"))
+```
+
+#### <kbd>method</kbd> `Registry.register`
+
+Register a function in the registry's namespace. Can be used as a decorator or
+called as a function with the `func` keyword argument supplying the function to
+register.
+
+| Argument    | Type     | Description                                               |
+| ----------- | -------- | --------------------------------------------------------- |
+| `name`      | str      | The name to register under the namespace.                 |
+| `func`      | Any      | Optional function to register (if not used as decorator). |
+| **RETURNS** | Callable | The decorator that takes one argument, the name.          |
+
+```python
+architectures = Registry(("spacy", "architectures"))
+
+# Use as decorator
+@architectures.register("custom_architecture")
+def custom_architecture():
+    pass
+
+# Use as regular function
+architectures.register("custom_architecture", func=custom_architecture)
+```
+
+### <kbd>method</kbd> `Registry.get`
+
+Get a function registered in the namespace.
+
+| Argument    | Type | Description              |
+| ----------- | ---- | ------------------------ |
+| `name`      | str  | The name.                |
+| **RETURNS** | Any  | The registered function. |
+
+```python
+custom_architecture = architectures.get("custom_architecture")
+```
+
+### <kbd>method</kbd> `Registry.get_all`
+
+Get all functions in the registry's namespace.
+
+| Argument    | Type           | Description                              |
+| ----------- | -------------- | ---------------------------------------- |
+| **RETURNS** | Dict[str, Any] | The registered functions, keyed by name. |
+
+```python
+all_architectures = architectures.get_all()
+# {"custom_architecture": <custom_architecture>}
 ```
 
 ### <kbd>function</kbd> `catalogue.check_exists`
@@ -135,54 +202,3 @@ Check if a namespace exists.
 | ------------ | ---- | ------------------------------------------------------------ |
 | `*namespace` | str  | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`. |
 | **RETURNS**  | bool | Whether the namespace exists.                                |
-
-```python
-register_architecture, get_architectures = catalogue.create("spacy", "architectures")
-assert catalogue.check_exists("spacy", "architectures")
-```
-
-### <kbd>function</kbd> `catalogue.register`
-
-Register a function for a given namespace. Used in `catalogue.create` as a
-partial function (with the given `namespace` applied).
-
-| Argument    | Type       | Description                                               |
-| ----------- | ---------- | --------------------------------------------------------- |
-| `namespace` | Tuple[str] | The namespace to register.                                |
-| `name`      | str        | The name to register under the namespace.                 |
-| `func`      | Any        | Optional function to register (if not used as decorator). |
-| **RETURNS** | Callable   | The decorator that takes one argument, the name.          |
-
-```python
-register_architecture = catalogue.register(("spacy", "architectures"), "my_custom_architecture")
-
-```
-
-### <kbd>function</kbd> `catalogue.get`
-
-Get all functions for a given namespace. Used in `catalogue.create` as a partial
-function (with the given `namespace` applied).
-
-| Argument    | Type           | Description                              |
-| ----------- | -------------- | ---------------------------------------- |
-| `namespace` | Tuple[str]     | The namespace to get.                    |
-| **RETURNS** | Dict[str, Any] | The registered functions, keyed by name. |
-
-```python
-all_architectures = catalogue.get(("spacy", "architectures"))
-```
-
-### <kbd>function</kbd> `catalogue.get_all`
-
-Get all matches for a given namespace, e.g. `("a", "b", "c")` and `("a", "b")`
-for namespace `("a", "b")`.
-
-| Argument    | Type                  | Description                                                    |
-| ----------- | --------------------- | -------------------------------------------------------------- |
-| `namespace` | Tuple[str]            | The namespace.                                                 |
-| **RETURNS** | Dict[Tuple[str], Any] | All entries for the namespace, keyed by their full namespaces. |
-
-```python
-all_entries = catalogue.get_all(("a", "b"))
-# {("a", "b"): func, ("a", "b", "c"): func}
-```
