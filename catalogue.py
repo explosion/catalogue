@@ -39,12 +39,12 @@ def check_exists(*namespace):
 
 
 def register(namespace, name, **kwargs):
-    """Register a function for a given namespace. Can be called as a function
-    or used as a decorator.
+    """Register a function for a given namespace. Used in catalogue.create as
+    a partial function (with the given namespace applied).
 
     namespace (Tuple[str]): The namespace to register.
     name (str): The name to register under the namespace.
-    func (Callable): Optional function to register (if not used as decorator).
+    func (Any): Optional function to register (if not used as decorator).
     RETURNS (Callable): The decorator.
     """
 
@@ -59,10 +59,11 @@ def register(namespace, name, **kwargs):
 
 
 def get(namespace):
-    """Get a all functions for a given namespace.
+    """Get a all functions for a given namespace. Used in catalogue.create as a
+    partial function (with the given namespace applied).
 
     namespace (Tuple[str]): The namespace to get.
-    RETURNS (Dict[str, Callable]): The functions, keyed by name.
+    RETURNS (Dict[str, Any]): The functions, keyed by name.
     """
     global REGISTRY
     result = OrderedDict()
@@ -79,7 +80,7 @@ def get_all(namespace):
     ("a", "b") for namespace ("a", "b").
 
     namespace (Tuple[str]): The namespace.
-    RETURNS (Dict[Tuple[str], Callable]): All entries for the namespace, keyed
+    RETURNS (Dict[Tuple[str], Any]): All entries for the namespace, keyed
         by their full namespaces.
     """
     global REGISTRY
