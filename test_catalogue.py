@@ -59,8 +59,10 @@ def test_create_single_namespace():
         pass
 
     register_test("b", func=b)
-    assert get_test("a") == a
-    assert get_test("b") == b
+    items = get_test()
+    assert len(items) == 2
+    assert items["a"] == a
+    assert items["b"] == b
     assert catalogue.check_exists("test", "a")
     assert catalogue.check_exists("test", "b")
     assert catalogue._get(("test", "a")) == a
@@ -80,6 +82,8 @@ def test_create_multi_namespace():
     def z():
         pass
 
-    assert get_test("z") == z
+    items = get_test()
+    assert len(items) == 1
+    assert items["z"] == z
     assert catalogue.check_exists("x", "y", "z")
     assert catalogue._get(("x", "y", "z")) == z

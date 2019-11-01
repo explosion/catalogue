@@ -58,14 +58,20 @@ def register(namespace, name, **kwargs):
     return do_registration
 
 
-def get(namespace, name):
-    """Get a function for a given namespace.
+def get(namespace):
+    """Get a all functions for a given namespace.
 
     namespace (Tuple[str]): The namespace to get.
-    name (str): The name to get under the namespace.
-    RETURNS: THe function.
+    RETURNS (Dict[str, Callable]): The functions, keyed by name.
     """
-    return _get(list(namespace) + [name])
+    global REGISTRY
+    result = OrderedDict()
+    for keys, value in REGISTRY.items():
+        if len(namespace) == len(keys) - 1 and all(
+            namespace[i] == keys[i] for i in range(len(namespace))
+        ):
+            result[keys[-1]] = value
+    return result
 
 
 def _get(namespace):
