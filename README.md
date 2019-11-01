@@ -81,6 +81,21 @@ or save a config to load back your object later. With catalogue, your functions
 can be parameterised by strings, so logging and serialization remains easy --- 
 while still giving you full extensibility.
 
+#### How do I make sure all of the registration decorators have run?
+
+Decorators normally run when modules are imported. Relying on this side-effect
+can sometimes lead to confusion, especially if there's no other reason
+the module would be imported. One solution is to use [entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points).
+
+For instance, in spaCy we're starting to use function registries to make
+the pipeline components much more customisable. Let's say one user,Jo,
+develops a better tagging model using new machine learning research.
+End-users of Jo's package should be able to write `spacy.load("jo_tagging_model")`.
+They shouldn't need to remember to write `import jos_tagged_model` first,
+just to run the function registries as a side-effect. With entry-points, the
+registration happens at install time --- so you don't need to rely on the
+import side-effects.
+
 ## 🎛 API
 
 ### <kbd>function</kbd> `catalogue.create`
