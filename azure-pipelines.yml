@@ -67,5 +67,5 @@ jobs:
 
   - script: |
       pip install -U pip pytest
-      python -m pytest --pyargs catalogue
+      python -m pytest test_catalogue.py
     displayName: 'Run tests'
