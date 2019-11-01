@@ -74,6 +74,24 @@ def get(namespace):
     return result
 
 
+def get_all(namespace):
+    """Get all matches for a given namespace, e.g. ("a", "b", "c") and
+    ("a", "b") for namespace ("a", "b").
+
+    namespace (Tuple[str]): The namespace.
+    RETURNS (Dict[Tuple[str], Callable]): All entries for the namespace, keyed
+        by their full namespaces.
+    """
+    global REGISTRY
+    result = OrderedDict()
+    for keys, value in REGISTRY.items():
+        if len(namespace) <= len(keys) and all(
+            namespace[i] == keys[i] for i in range(len(namespace))
+        ):
+            result[keys] = value
+    return result
+
+
 def _get(namespace):
     """Get the value for a given namespace.
 
@@ -99,23 +117,6 @@ def _set(namespace, func):
     """
     global REGISTRY
     REGISTRY[tuple(namespace)] = func
-
-
-def _get_all(namespace):
-    """Get all matches for a given namespace, e.g. ("a", "b", "c") and
-    ("a", "b") for namespace ("a", "b").
-
-    namespace (Tuple[str]): The namespace.
-    RETURNS (dict): All entries for the namespace.
-    """
-    global REGISTRY
-    result = OrderedDict()
-    for keys, value in REGISTRY.items():
-        if len(namespace) <= len(keys) and all(
-            namespace[i] == keys[i] for i in range(len(namespace))
-        ):
-            result[keys] = value
-    return result
 
 
 def _remove(namespace):
