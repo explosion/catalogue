@@ -36,15 +36,15 @@ def test_get_all():
     catalogue._set(("a", "b", "d"), "test")
     catalogue._set(("a", "b"), "test")
     catalogue._set(("b", "a"), "test")
-    all_items = catalogue._get_all(("a", "b"))
+    all_items = catalogue.get_all(("a", "b"))
     assert len(all_items) == 3
     assert ("a", "b", "c") in all_items
     assert ("a", "b", "d") in all_items
     assert ("a", "b") in all_items
-    all_items = catalogue._get_all(("a", "b", "c"))
+    all_items = catalogue.get_all(("a", "b", "c"))
     assert len(all_items) == 1
     assert ("a", "b", "c") in all_items
-    assert len(catalogue._get_all(("a", "b", "c", "d"))) == 0
+    assert len(catalogue.get_all(("a", "b", "c", "d"))) == 0
 
 
 def test_create_single_namespace():
