@@ -53,7 +53,7 @@ jobs:
       architecture: 'x64'
 
   - script: |
-      pip install -U pip setuptools
+      pip install -U pip setuptools --user
       python setup.py sdist
     displayName: 'Build sdist'
 
