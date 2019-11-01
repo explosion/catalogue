@@ -75,6 +75,12 @@ Sure, that's the more classic callback approach. Instead of a string ID,
 `load_data` could also take a function, in which case you wouldn't need a
 package like this.
 
+Catalogue helps you when you need to produce a serializable record of which
+functions were passed in. For instance, you might want to write a log message,
+or save a config to load back your object later. With catalogue, your functions
+can be parameterised by strings, so logging and serialization remains easy --- 
+while still giving you full extensibility.
+
 ## 🎛 API
 
 ### <kbd>function</kbd> `catalogue.create`
