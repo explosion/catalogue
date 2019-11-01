@@ -52,7 +52,9 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
-  - script: python setup.py sdist
+  - script: |
+      pip install -U pip setuptools pytest
+      python setup.py sdist
     displayName: 'Build sdist'
 
   - task: DeleteFiles@1
@@ -65,7 +67,5 @@ jobs:
       pip install dist/$SDIST
     displayName: 'Install from sdist'
 
-  - script: |
-      pip install -U pip pytest
-      python -m pytest test_catalogue.py
+  - script: python -m pytest test_catalogue.py
     displayName: 'Run tests'
