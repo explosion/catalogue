@@ -168,7 +168,7 @@ def custom_architecture():
 architectures.register("custom_architecture", func=custom_architecture)
 ```
 
-### <kbd>method</kbd> `Registry.get`
+#### <kbd>method</kbd> `Registry.get`
 
 Get a function registered in the namespace.
 
@@ -181,7 +181,7 @@ Get a function registered in the namespace.
 custom_architecture = architectures.get("custom_architecture")
 ```
 
-### <kbd>method</kbd> `Registry.get_all`
+#### <kbd>method</kbd> `Registry.get_all`
 
 Get all functions in the registry's namespace.
 
