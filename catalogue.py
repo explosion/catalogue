@@ -16,10 +16,17 @@ REGISTRY = OrderedDict()
 
 
 def create(*namespace):
-    """Create a new registry."""
+    """Create a new registry.
+
+    *namespace (str): The namespace, e.g. "spacy" or "spacy", "architectures".
+    RETURNS (Tuple[Callable]): The setter (decorator to register functions)
+        and getter (to retrieve functions).
+    """
     if check_exists(*namespace):
         raise RegistryError("Namespace already exists: {}".format(namespace))
-    return functools.partial(register, namespace)
+    setter = functools.partial(register, namespace)
+    getter = functools.partial(get, namespace)
+    return setter, getter
 
 
 def check_exists(*namespace):
@@ -49,6 +56,16 @@ def register(namespace, name, **kwargs):
     if func is not None:
         return do_registration(func)
     return do_registration
+
+
+def get(namespace, name):
+    """Get a function for a given namespace.
+
+    namespace (Tuple[str]): The namespace to get.
+    name (str): The name to get under the namespace.
+    RETURNS: THe function.
+    """
+    return _get(list(namespace) + [name])
 
 
 def _get(namespace):

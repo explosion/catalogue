@@ -48,7 +48,7 @@ def test_get_all():
 
 
 def test_create_single_namespace():
-    register_test = catalogue.create("test")
+    register_test, get_test = catalogue.create("test")
     assert catalogue.REGISTRY == {}
 
     @register_test("a")
@@ -59,6 +59,8 @@ def test_create_single_namespace():
         pass
 
     register_test("b", func=b)
+    assert get_test("a") == a
+    assert get_test("b") == b
     assert catalogue.check_exists("test", "a")
     assert catalogue.check_exists("test", "b")
     assert catalogue._get(("test", "a")) == a
@@ -72,11 +74,12 @@ def test_create_single_namespace():
 
 
 def test_create_multi_namespace():
-    register_test = catalogue.create("x", "y")
+    register_test, get_test = catalogue.create("x", "y")
 
-    @register_test("z1")
-    def z1():
+    @register_test("z")
+    def z():
         pass
 
-    assert catalogue.check_exists("x", "y", "z1")
-    assert catalogue._get(("x", "y", "z1")) == z1
+    assert get_test("z") == z
+    assert catalogue.check_exists("x", "y", "z")
+    assert catalogue._get(("x", "y", "z")) == z
