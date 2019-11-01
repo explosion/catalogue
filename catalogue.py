@@ -35,7 +35,7 @@ def register(namespace, name, **kwargs):
     """Register a function for a given namespace. Can be called as a function
     or used as a decorator.
 
-    namespace (List[str]): The namespace to register.
+    namespace (Tuple[str]): The namespace to register.
     name (str): The name to register under the namespace.
     func (Callable): Optional function to register (if not used as decorator).
     RETURNS (Callable): The decorator.
@@ -54,12 +54,12 @@ def register(namespace, name, **kwargs):
 def _get(namespace):
     """Get the value for a given namespace.
 
-    namespace (List[str]): The namespace.
+    namespace (Tuple[str]): The namespace.
     RETURNS: The value for the namespace.
     """
     global REGISTRY
     if not all(isinstance(name, basestring_) for name in namespace):
-        err = "Invalid namespace. Expected list of strings, but got: {}"
+        err = "Invalid namespace. Expected tuple of strings, but got: {}"
         raise ValueError(err.format(namespace))
     namespace = tuple(namespace)
     if namespace not in REGISTRY:
@@ -71,7 +71,7 @@ def _get(namespace):
 def _set(namespace, func):
     """Set a value for a given namespace.
 
-    namespace (List[str]): The namespace.
+    namespace (Tuple[str]): The namespace.
     func (Callable): The value to set.
     """
     global REGISTRY
@@ -79,6 +79,12 @@ def _set(namespace, func):
 
 
 def _get_all(namespace):
+    """Get all matches for a given namespace, e.g. ("a", "b", "c") and
+    ("a", "b") for namespace ("a", "b").
+
+    namespace (Tuple[str]): The namespace.
+    RETURNS (dict): All entries for the namespace.
+    """
     global REGISTRY
     result = OrderedDict()
     for keys, value in REGISTRY.items():
@@ -90,6 +96,11 @@ def _get_all(namespace):
 
 
 def _remove(namespace):
+    """Remove a value for a given namespace.
+
+    namespace (Tuple[str]): The namespace.
+    RETURNS: The removed value.
+    """
     global REGISTRY
     namespace = tuple(namespace)
     if namespace not in REGISTRY:
