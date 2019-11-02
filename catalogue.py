@@ -58,7 +58,11 @@ class Registry(object):
         name (str): The name.
         RETURNS (Any): The registered function.
         """
-        return _get(list(self.namespace) + [name])
+        namespace = list(self.namespace) + [name]
+        if not check_exists(*namespace):
+            err = "Cant't find '{}' in registry {}"
+            raise RegistryError(err.format(name, " -> ".join(self.namespace)))
+        return _get(namespace)
 
     def get_all(self):
         """Get a all functions for a given namespace.
