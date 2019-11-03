@@ -87,3 +87,19 @@ def test_create_multi_namespace():
     assert items["z"] == z
     assert catalogue.check_exists("x", "y", "z")
     assert catalogue._get(("x", "y", "z")) == z
+
+
+def test_entry_points():
+    # Create a new EntryPoint object by pretending we have a config.cfg and
+    # use one of catalogue's util functions as the advertised function
+    ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
+    ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
+    catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
+    assert catalogue.REGISTRY == {}
+    test_registry = catalogue.create("test", "foo", entry_points=True)
+    entry_points = test_registry.get_entry_points()
+    assert "bar" in entry_points
+    assert entry_points["bar"] == catalogue.check_exists
+    assert test_registry.get_entry_point("bar") == catalogue.check_exists
+    assert ("test", "foo", "bar") in catalogue.REGISTRY
+    assert catalogue._get(("test", "foo", "bar")) == catalogue.check_exists
