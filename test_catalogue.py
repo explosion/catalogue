@@ -90,7 +90,7 @@ def test_create_multi_namespace():
 
 
 def test_entry_points():
-    # Create a new EntryPoint object by pretending we have a config.cfg and
+    # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
     ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
     ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
