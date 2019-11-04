@@ -85,8 +85,10 @@ class Registry(object):
                 return from_entry_point
         namespace = list(self.namespace) + [name]
         if not check_exists(*namespace):
-            err = "Cant't find '{}' in registry {}"
-            raise RegistryError(err.format(name, " -> ".join(self.namespace)))
+            err = "Cant't find '{}' in registry {}. Available names: {}"
+            current_namespace = " -> ".join(self.namespace)
+            available = ",".join(self.get_all().keys()) or "none"
+            raise RegistryError(err.format(name, current_namespace, available))
         return _get(namespace)
 
     def get_all(self):
