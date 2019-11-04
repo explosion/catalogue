@@ -155,7 +155,29 @@ functions.
 | **RETURNS**    | `Registry` | The newly created object.                                                                      |
 
 ```python
+# User-facing API
+architectures = catalogue.create("spacy", "architectures")
+# Internal API
 architectures = Registry(("spacy", "architectures"))
+```
+
+#### <kbd>method</kbd> `Registry.__contains__`
+
+Check whether a name is in the registry.
+
+| Argument    | Type | Description                          |
+| ----------- | ---- | ------------------------------------ |
+| `name`      | str  | The name to check.                   |
+| **RETURNS** | bool | Whether the name is in the registry. |
+
+```python
+architectures = catalogue.create("spacy", "architectures")
+
+@architectures.register("custom_architecture")
+def custom_architecture():
+    pass
+
+assert "custom_architecture" in architectures
 ```
 
 #### <kbd>method</kbd> `Registry.register`

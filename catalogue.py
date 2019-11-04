@@ -48,6 +48,14 @@ class Registry(object):
             for name, value in self.get_entry_points().items():
                 self.register(name, func=value)
 
+    def __contains__(self, name):
+        """Check whether a name is in the registry.
+
+        name (str): The name to check.
+        RETURNS (bool): Whether the name is in the registry.
+        """
+        return tuple(list(self.namespace) + [name]) in REGISTRY
+
     def register(self, name, **kwargs):
         """Register a function for a given namespace.
 

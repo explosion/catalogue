@@ -31,6 +31,14 @@ def test_get_set():
     assert catalogue._remove(("x", "y", "z2")) == "test2"
 
 
+def test_registry_get_set():
+    test_registry = catalogue.create("test")
+    with pytest.raises(catalogue.RegistryError):
+        test_registry.get("foo")
+    test_registry.register("foo", func=lambda x: x)
+    assert "foo" in test_registry
+
+
 def test_get_all():
     catalogue._set(("a", "b", "c"), "test")
     catalogue._set(("a", "b", "d"), "test")
