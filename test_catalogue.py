@@ -112,3 +112,4 @@ def test_entry_points():
     assert catalogue.REGISTRY == {}
     assert test_registry.get("bar") == catalogue.check_exists
     assert test_registry.get_all() == {"bar": catalogue.check_exists}
+    assert "bar" in test_registry

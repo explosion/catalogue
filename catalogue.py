@@ -52,7 +52,9 @@ class Registry(object):
         name (str): The name to check.
         RETURNS (bool): Whether the name is in the registry.
         """
-        return tuple(list(self.namespace) + [name]) in REGISTRY
+        namespace = tuple(list(self.namespace) + [name])
+        has_entry_point = self.entry_points and self.get_entry_point(name)
+        return has_entry_point or namespace in REGISTRY
 
     def register(self, name, **kwargs):
         """Register a function for a given namespace.
