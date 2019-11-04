@@ -94,7 +94,7 @@ class Registry(object):
     def get_entry_points(self):
         """Get registered entry points from other packages for this namespace.
 
-        RETURNS (dict): Entry points, keyed by name.
+        RETURNS (Dict[str, Any]): Entry points, keyed by name.
         """
         result = {}
         for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
@@ -103,10 +103,11 @@ class Registry(object):
 
     def get_entry_point(self, name, default=None):
         """Check if registered entry point is available for a given name in the
-        namespace and load it. Otherwise, return None.
+        namespace and load it. Otherwise, return the default value.
 
-        name (unicode): Name of entry point to load.
-        RETURNS: The loaded entry point or None.
+        name (str): Name of entry point to load.
+        default (Any): The default value to return.
+        RETURNS (Any): The loaded entry point or the default value.
         """
         for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
             if entry_point.name == name:

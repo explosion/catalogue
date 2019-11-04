@@ -107,12 +107,19 @@ you don't need to rely on the import side-effects.
 ### <kbd>function</kbd> `catalogue.create`
 
 Create a new registry for a given namespace. Returns a setter function that can
-be used as a decorator or called with a name and `func` keyword argument.
+be used as a decorator or called with a name and `func` keyword argument. If
+`entry_points=True` is set, the registry will check for
+[Python entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points)
+advertised for the given namespace, e.g. the entry point group
+`spacy_architectures` for the namespace `"spacy", "architectures"`, and
+pre-populate the global registry. This allows other packages to auto-register
+functions.
 
-| Argument     | Type       | Description                                                            |
-| ------------ | ---------- | ---------------------------------------------------------------------- |
-| `*namespace` | str        | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.           |
-| **RETURNS**  | `Registry` | The `Registry` object with methods to register and retrieve functions. |
+| Argument       | Type       | Description                                                                                    |
+| -------------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| `*namespace`   | str        | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.                                   |
+| `entry_points` | bool       | Whether to check for entry points of the given namespace and pre-populate the global registry. |
+| **RETURNS**    | `Registry` | The `Registry` object with methods to register and retrieve functions.                         |
 
 ```python
 architectures = catalogue.create("spacy", "architectures")
@@ -133,12 +140,19 @@ usually created internally when you call `catalogue.create`.
 
 #### <kbd>method</kbd> `Registry.__init__`
 
-Initialize a new registry.
+Initialize a new registry. If `entry_points=True` is set, the registry will
+check for
+[Python entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points)
+advertised for the given namespace, e.g. the entry point group
+`spacy_architectures` for the namespace `"spacy", "architectures"`, and
+pre-populate the global registry. This allows other packages to auto-register
+functions.
 
-| Argument    | Type       | Description                                                  |
-| ----------- | ---------- | ------------------------------------------------------------ |
-| `namespace` | Tuple[str] | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`. |
-| **RETURNS** | `Registry` | The newly created object.                                    |
+| Argument       | Type       | Description                                                                                    |
+| -------------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| `namespace`    | Tuple[str] | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.                                   |
+| `entry_points` | bool       | Whether to check for entry points of the given namespace and pre-populate the global registry. |
+| **RETURNS**    | `Registry` | The newly created object.                                                                      |
 
 ```python
 architectures = Registry(("spacy", "architectures"))
@@ -192,6 +206,38 @@ Get all functions in the registry's namespace.
 ```python
 all_architectures = architectures.get_all()
 # {"custom_architecture": <custom_architecture>}
+```
+
+#### <kbd>method</kbd> `Registry.get_entry_points`
+
+Get registered entry points from other packages for this namespace. The name of
+the entry point group is the namespace joined by `_`.
+
+| Argument    | Type           | Description                             |
+| ----------- | -------------- | --------------------------------------- |
+| **RETURNS** | Dict[str, Any] | The loaded entry points, keyed by name. |
+
+```python
+architectures = catalog.register("spacy", "architectures", entry_points=True)
+# Will get all entry points of the group "spacy_architectures"
+all_entry_points = architectures.get_entry_points()
+```
+
+#### <kbd>method</kbd> `Registry.get_entry_point`
+
+Check if registered entry point is available for a given name in the namespace
+and load it. Otherwise, return the default value.
+
+| Argument    | Type | Description                                      |
+| ----------- | ---- | ------------------------------------------------ |
+| `name`      | str  | Name of entry point to load.                     |
+| `default`   | Any  | The default value to return. Defaults to `None`. |
+| **RETURNS** | Any  | The loaded entry point or the default value.     |
+
+```python
+architectures = catalog.register("spacy", "architectures", entry_points=True)
+# Will get entry point "custom_architecture" of the group "spacy_architectures"
+custom_architecture = architectures.get_entry_point("custom_architecture")
 ```
 
 ### <kbd>function</kbd> `catalogue.check_exists`
