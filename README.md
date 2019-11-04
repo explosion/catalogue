@@ -116,9 +116,9 @@ be used as a decorator or called with a name and `func` keyword argument. If
 `entry_points=True` is set, the registry will check for
 [Python entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points)
 advertised for the given namespace, e.g. the entry point group
-`spacy_architectures` for the namespace `"spacy", "architectures"`, and
-pre-populate the global registry. This allows other packages to auto-register
-functions.
+`spacy_architectures` for the namespace `"spacy", "architectures"`, in
+`Registry.get` and `Registry.get_all`. This allows other packages to
+auto-register functions.
 
 | Argument       | Type       | Description                                                                                    |
 | -------------- | ---------- | ---------------------------------------------------------------------------------------------- |
@@ -149,15 +149,14 @@ Initialize a new registry. If `entry_points=True` is set, the registry will
 check for
 [Python entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points)
 advertised for the given namespace, e.g. the entry point group
-`spacy_architectures` for the namespace `"spacy", "architectures"`, and
-pre-populate the global registry. This allows other packages to auto-register
-functions.
+`spacy_architectures` for the namespace `"spacy", "architectures"`, in
+`Registry.get` and `Registry.get_all`.
 
-| Argument       | Type       | Description                                                                                    |
-| -------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `namespace`    | Tuple[str] | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.                                   |
-| `entry_points` | bool       | Whether to check for entry points of the given namespace and pre-populate the global registry. |
-| **RETURNS**    | `Registry` | The newly created object.                                                                      |
+| Argument       | Type       | Description                                                                      |
+| -------------- | ---------- | -------------------------------------------------------------------------------- |
+| `namespace`    | Tuple[str] | The namespace, e.g. `"spacy"` or `"spacy", "architectures"`.                     |
+| `entry_points` | bool       | Whether to check for entry points of the given namespace in `get` and `get_all`. |
+| **RETURNS**    | `Registry` | The newly created object.                                                        |
 
 ```python
 # User-facing API

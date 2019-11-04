@@ -44,9 +44,7 @@ class Registry(object):
         """
         self.namespace = namespace
         self.entry_point_namespace = "_".join(namespace)
-        if entry_points:
-            for name, value in self.get_entry_points().items():
-                self.register(name, func=value)
+        self.entry_points = entry_points
 
     def __contains__(self, name):
         """Check whether a name is in the registry.
@@ -79,6 +77,10 @@ class Registry(object):
         name (str): The name.
         RETURNS (Any): The registered function.
         """
+        if self.entry_points:
+            from_entry_point = self.get_entry_point(name)
+            if from_entry_point:
+                return from_entry_point
         namespace = list(self.namespace) + [name]
         if not check_exists(*namespace):
             err = "Cant't find '{}' in registry {}"
@@ -93,6 +95,8 @@ class Registry(object):
         """
         global REGISTRY
         result = OrderedDict()
+        if self.entry_points:
+            result.update(self.get_entry_points())
         for keys, value in REGISTRY.items():
             if len(self.namespace) == len(keys) - 1 and all(
                 self.namespace[i] == keys[i] for i in range(len(self.namespace))
