@@ -4,36 +4,49 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 import sys
 
+try:  # Python 3.8
+    import importlib.metadata as importlib_metadata
+except ImportError:
+    import importlib_metadata
+
 if sys.version_info[0] == 2:
     basestring_ = basestring  # noqa: F821
 else:
     basestring_ = str
 
+# Ony ever call this once for performance reasons
+AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()
 
 # This is where functions will be registered
 REGISTRY = OrderedDict()
 
 
-def create(*namespace):
+def create(*namespace, **kwargs):
     """Create a new registry.
 
     *namespace (str): The namespace, e.g. "spacy" or "spacy", "architectures".
     RETURNS (Tuple[Callable]): The setter (decorator to register functions)
         and getter (to retrieve functions).
     """
+    entry_points = kwargs.get("entry_points", False)
     if check_exists(*namespace):
         raise RegistryError("Namespace already exists: {}".format(namespace))
-    return Registry(namespace)
+    return Registry(namespace, entry_points=entry_points)
 
 
 class Registry(object):
-    def __init__(self, namespace):
+    def __init__(self, namespace, entry_points=False):
         """Initialize a new registry.
 
         namespace (Tuple[str]): The namespace.
+        entry_points (bool): Whether to also check for entry points.
         RETURNS (Registry): The newly created object.
         """
         self.namespace = namespace
+        self.entry_point_namespace = "_".join(namespace)
+        if entry_points:
+            for name, value in self.get_entry_points().items():
+                self.register(name, func=value)
 
     def register(self, name, **kwargs):
         """Register a function for a given namespace.
@@ -78,6 +91,29 @@ class Registry(object):
             ):
                 result[keys[-1]] = value
         return result
+
+    def get_entry_points(self):
+        """Get registered entry points from other packages for this namespace.
+
+        RETURNS (Dict[str, Any]): Entry points, keyed by name.
+        """
+        result = {}
+        for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+            result[entry_point.name] = entry_point.load()
+        return result
+
+    def get_entry_point(self, name, default=None):
+        """Check if registered entry point is available for a given name in the
+        namespace and load it. Otherwise, return the default value.
+
+        name (str): Name of entry point to load.
+        default (Any): The default value to return.
+        RETURNS (Any): The loaded entry point or the default value.
+        """
+        for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+            if entry_point.name == name:
+                return entry_point.load()
+        return default
 
 
 def check_exists(*namespace):
