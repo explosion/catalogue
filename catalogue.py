@@ -21,13 +21,14 @@ AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()
 REGISTRY = OrderedDict()
 
 
-def create(*namespace, entry_points=False):
+def create(*namespace, **kwargs):
     """Create a new registry.
 
     *namespace (str): The namespace, e.g. "spacy" or "spacy", "architectures".
     RETURNS (Tuple[Callable]): The setter (decorator to register functions)
         and getter (to retrieve functions).
     """
+    entry_points = kwargs.get("entry_points", False)
     if check_exists(*namespace):
         raise RegistryError("Namespace already exists: {}".format(namespace))
     return Registry(namespace, entry_points=entry_points)
