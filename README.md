@@ -64,7 +64,7 @@ you'll be able to access all loaders by calling `loaders.get_all`.
 # YOUR PACKAGE
 def load_data(data, loader_id):
     print("All loaders:", loaders.get_all()) # {"custom_loader": <custom_loader>}
-    loader = loaders.get(loader)
+    loader = loaders.get(loader_id)
     return loader(data)
 ```
 
