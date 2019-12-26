@@ -56,6 +56,15 @@ class Registry(object):
         has_entry_point = self.entry_points and self.get_entry_point(name)
         return has_entry_point or namespace in REGISTRY
 
+    def __call__(self, name, **kwargs):
+        """Register a function for a given namespace. Same as Registry.register.
+
+        name (str): The name to register under the namespace.
+        func (Any): Optional function to register (if not used as decorator).
+        RETURNS (Callable): The decorator.
+        """
+        return self.register(name, **kwargs)
+
     def register(self, name, **kwargs):
         """Register a function for a given namespace.
 

@@ -184,6 +184,12 @@ def custom_architecture():
 assert "custom_architecture" in architectures
 ```
 
+#### <kbd>method</kbd> `Registry.__call__`
+
+Register a function in the registry's namespace. Can be used as a decorator or
+called as a function with the `func` keyword argument supplying the function to
+register. Delegates to `Registry.register`.
+
 #### <kbd>method</kbd> `Registry.register`
 
 Register a function in the registry's namespace. Can be used as a decorator or

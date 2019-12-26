@@ -39,6 +39,12 @@ def test_registry_get_set():
     assert "foo" in test_registry
 
 
+def test_registry_call():
+    test_registry = catalogue.create("test")
+    test_registry("foo", func=lambda x: x)
+    assert "foo" in test_registry
+
+
 def test_get_all():
     catalogue._set(("a", "b", "c"), "test")
     catalogue._set(("a", "b", "d"), "test")
