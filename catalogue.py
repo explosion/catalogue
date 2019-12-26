@@ -14,7 +14,7 @@ if sys.version_info[0] == 2:
 else:
     basestring_ = str
 
-# Ony ever call this once for performance reasons
+# Only ever call this once for performance reasons
 AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()
 
 # This is where functions will be registered
