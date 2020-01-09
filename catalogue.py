@@ -1,52 +1,44 @@
-# coding: utf8
-from __future__ import unicode_literals
-
-from collections import OrderedDict
-import sys
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar
 
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
 except ImportError:
-    import importlib_metadata
-
-if sys.version_info[0] == 2:
-    basestring_ = basestring  # noqa: F821
-else:
-    basestring_ = str
+    import importlib_metadata  # type: ignore
 
 # Only ever call this once for performance reasons
-AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()
+AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()  # type: ignore
 
 # This is where functions will be registered
-REGISTRY = OrderedDict()
+REGISTRY: Dict[Tuple[str, ...], Any] = {}
 
 
-def create(*namespace, **kwargs):
+InFunc = TypeVar("InFunc")
+
+
+def create(*namespace: str, entry_points: bool = False) -> "Registry":
     """Create a new registry.
 
     *namespace (str): The namespace, e.g. "spacy" or "spacy", "architectures".
-    RETURNS (Tuple[Callable]): The setter (decorator to register functions)
-        and getter (to retrieve functions).
+    entry_points (bool): Accept registered functions from entry points.
+    RETURNS (Registry): The Registry object.
     """
-    entry_points = kwargs.get("entry_points", False)
     if check_exists(*namespace):
         raise RegistryError("Namespace already exists: {}".format(namespace))
     return Registry(namespace, entry_points=entry_points)
 
 
 class Registry(object):
-    def __init__(self, namespace, entry_points=False):
+    def __init__(self, namespace: Sequence[str], entry_points: bool = False) -> None:
         """Initialize a new registry.
 
-        namespace (Tuple[str]): The namespace.
+        namespace (Sequence[str]): The namespace.
         entry_points (bool): Whether to also check for entry points.
-        RETURNS (Registry): The newly created object.
         """
         self.namespace = namespace
         self.entry_point_namespace = "_".join(namespace)
         self.entry_points = entry_points
 
-    def __contains__(self, name):
+    def __contains__(self, name: str) -> bool:
         """Check whether a name is in the registry.
 
         name (str): The name to check.
@@ -56,16 +48,20 @@ class Registry(object):
         has_entry_point = self.entry_points and self.get_entry_point(name)
         return has_entry_point or namespace in REGISTRY
 
-    def __call__(self, name, **kwargs):
+    def __call__(
+        self, name: str, func: Optional[Any] = None
+    ) -> Callable[[InFunc], InFunc]:
         """Register a function for a given namespace. Same as Registry.register.
 
         name (str): The name to register under the namespace.
         func (Any): Optional function to register (if not used as decorator).
         RETURNS (Callable): The decorator.
         """
-        return self.register(name, **kwargs)
+        return self.register(name, func=func)
 
-    def register(self, name, **kwargs):
+    def register(
+        self, name: str, *, func: Optional[Any] = None
+    ) -> Callable[[InFunc], InFunc]:
         """Register a function for a given namespace.
 
         name (str): The name to register under the namespace.
@@ -77,12 +73,11 @@ class Registry(object):
             _set(list(self.namespace) + [name], func)
             return func
 
-        func = kwargs.get("func")
         if func is not None:
             return do_registration(func)
         return do_registration
 
-    def get(self, name):
+    def get(self, name: str) -> Any:
         """Get the registered function for a given name.
 
         name (str): The name.
@@ -100,14 +95,14 @@ class Registry(object):
             raise RegistryError(err.format(name, current_namespace, available))
         return _get(namespace)
 
-    def get_all(self):
+    def get_all(self) -> Dict[str, Any]:
         """Get a all functions for a given namespace.
 
         namespace (Tuple[str]): The namespace to get.
         RETURNS (Dict[str, Any]): The functions, keyed by name.
         """
         global REGISTRY
-        result = OrderedDict()
+        result = {}
         if self.entry_points:
             result.update(self.get_entry_points())
         for keys, value in REGISTRY.items():
@@ -117,7 +112,7 @@ class Registry(object):
                 result[keys[-1]] = value
         return result
 
-    def get_entry_points(self):
+    def get_entry_points(self) -> Dict[str, Any]:
         """Get registered entry points from other packages for this namespace.
 
         RETURNS (Dict[str, Any]): Entry points, keyed by name.
@@ -127,7 +122,7 @@ class Registry(object):
             result[entry_point.name] = entry_point.load()
         return result
 
-    def get_entry_point(self, name, default=None):
+    def get_entry_point(self, name: str, default: Optional[Any] = None) -> Any:
         """Check if registered entry point is available for a given name in the
         namespace and load it. Otherwise, return the default value.
 
@@ -141,7 +136,7 @@ class Registry(object):
         return default
 
 
-def check_exists(*namespace):
+def check_exists(*namespace: str) -> bool:
     """Check if a namespace exists.
 
     *namespace (str): The namespace.
@@ -150,14 +145,14 @@ def check_exists(*namespace):
     return namespace in REGISTRY
 
 
-def _get(namespace):
+def _get(namespace: Sequence[str]) -> Any:
     """Get the value for a given namespace.
 
-    namespace (Tuple[str]): The namespace.
-    RETURNS: The value for the namespace.
+    namespace (Sequence[str]): The namespace.
+    RETURNS (Any): The value for the namespace.
     """
     global REGISTRY
-    if not all(isinstance(name, basestring_) for name in namespace):
+    if not all(isinstance(name, str) for name in namespace):
         err = "Invalid namespace. Expected tuple of strings, but got: {}"
         raise ValueError(err.format(namespace))
     namespace = tuple(namespace)
@@ -167,16 +162,16 @@ def _get(namespace):
     return REGISTRY[namespace]
 
 
-def _get_all(namespace):
+def _get_all(namespace: Sequence[str]) -> Dict[Tuple[str, ...], Any]:
     """Get all matches for a given namespace, e.g. ("a", "b", "c") and
     ("a", "b") for namespace ("a", "b").
 
-    namespace (Tuple[str]): The namespace.
+    namespace (Sequence[str]): The namespace.
     RETURNS (Dict[Tuple[str], Any]): All entries for the namespace, keyed
         by their full namespaces.
     """
     global REGISTRY
-    result = OrderedDict()
+    result = {}
     for keys, value in REGISTRY.items():
         if len(namespace) <= len(keys) and all(
             namespace[i] == keys[i] for i in range(len(namespace))
@@ -185,21 +180,21 @@ def _get_all(namespace):
     return result
 
 
-def _set(namespace, func):
+def _set(namespace: Sequence[str], func: Any) -> None:
     """Set a value for a given namespace.
 
-    namespace (Tuple[str]): The namespace.
+    namespace (Sequence[str]): The namespace.
     func (Callable): The value to set.
     """
     global REGISTRY
     REGISTRY[tuple(namespace)] = func
 
 
-def _remove(namespace):
+def _remove(namespace: Sequence[str]) -> Any:
     """Remove a value for a given namespace.
 
-    namespace (Tuple[str]): The namespace.
-    RETURNS: The removed value.
+    namespace (Sequence[str]): The namespace.
+    RETURNS (Any): The removed value.
     """
     global REGISTRY
     namespace = tuple(namespace)
