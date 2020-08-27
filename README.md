@@ -251,7 +251,7 @@ the entry point group is the namespace joined by `_`.
 | **RETURNS** | Dict[str, Any] | The loaded entry points, keyed by name. |
 
 ```python
-architectures = catalog.create("spacy", "architectures", entry_points=True)
+architectures = catalogue.create("spacy", "architectures", entry_points=True)
 # Will get all entry points of the group "spacy_architectures"
 all_entry_points = architectures.get_entry_points()
 ```
@@ -268,7 +268,7 @@ and load it. Otherwise, return the default value.
 | **RETURNS** | Any  | The loaded entry point or the default value.     |
 
 ```python
-architectures = catalog.create("spacy", "architectures", entry_points=True)
+architectures = catalogue.create("spacy", "architectures", entry_points=True)
 # Will get entry point "custom_architecture" of the group "spacy_architectures"
 custom_architecture = architectures.get_entry_point("custom_architecture")
 ```
