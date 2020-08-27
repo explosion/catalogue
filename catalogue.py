@@ -142,7 +142,7 @@ class Registry(object):
         docstring, if available.
 
         name (str): Name of the registered function.
-        RETURNS (Dict[str, Union[str, int]]): The inormation about the function.
+        RETURNS (Dict[str, Optional[Union[str, int]]]): The function info.
         """
         func = self.get(name)
         _, line_no = inspect.getsourcelines(func)
