@@ -285,7 +285,9 @@ docstring, if available.
 | **RETURNS** | Dict[str, Union[str, int]]  | The information about the function.    |
 
 ```python
-architectures = catalog.create("spacy", "architectures", entry_points=True)
+import catalogue
+
+architectures = catalogue.create("spacy", "architectures", entry_points=True)
 
 @architectures("my_architecture")
 def my_architecture():
@@ -295,7 +297,7 @@ def my_architecture():
 info = architectures.find("my_architecture")
 # {'module': 'your_package.architectures',
 #  'file': '/path/to/your_package/architectures.py',
-#  'line_no': 125,
+#  'line_no': 5,
 #  'docstring': 'This is an architecture'}
 ```
 
