@@ -1,6 +1,6 @@
 import pytest
-import catalogue
 from pathlib import Path
+import catalogue
 
 
 @pytest.fixture(autouse=True)
