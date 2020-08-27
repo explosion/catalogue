@@ -1,5 +1,6 @@
 import pytest
 import catalogue
+from pathlib import Path
 
 
 @pytest.fixture(autouse=True)
@@ -116,3 +117,19 @@ def test_entry_points():
     assert test_registry.get("bar") == catalogue.check_exists
     assert test_registry.get_all() == {"bar": catalogue.check_exists}
     assert "bar" in test_registry
+
+
+def test_registry_find():
+    test_registry = catalogue.create("test_registry_find")
+    name = "a"
+
+    @test_registry.register(name)
+    def a():
+        """This is a registered function."""
+        pass
+
+    info = test_registry.find(name)
+    assert info["module"] == "test_catalogue"
+    assert info["file"] == str(Path(__file__))
+    assert info["docstring"] == "This is a registered function."
+    assert info["line_no"]

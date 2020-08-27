@@ -273,6 +273,32 @@ architectures = catalog.create("spacy", "architectures", entry_points=True)
 custom_architecture = architectures.get_entry_point("custom_architecture")
 ```
 
+#### <kbd>method</kbd> `Registry.find`
+
+Find the information about a registered function, including the
+module and path to the file it's defined in, the line number and the
+docstring, if available.
+
+| Argument    | Type | Description                                      |
+| ----------- | ---- | ------------------------------------------------ |
+| `name`      | str  | Name of the registered function.                     |
+| **RETURNS** | Dict[str, Union[str, int]]  | The information about the function.    |
+
+```python
+architectures = catalog.create("spacy", "architectures", entry_points=True)
+
+@architectures("my_architecture")
+def my_architecture():
+    """This is an architecture"""
+    pass
+
+info = architectures.find("my_architecture")
+# {'module': 'your_package.architectures',
+#  'file': '/path/to/your_package/architectures.py',
+#  'line_no': 125,
+#  'docstring': 'This is an architecture'}
+```
+
 ### <kbd>function</kbd> `catalogue.check_exists`
 
 Check if a namespace exists.

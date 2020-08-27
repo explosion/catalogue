@@ -1,4 +1,5 @@
-from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union
+import inspect
 
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
@@ -134,6 +135,23 @@ class Registry(object):
             if entry_point.name == name:
                 return entry_point.load()
         return default
+
+    def find(self, name: str) -> Dict[str, Union[str, int]]:
+        """Find the information about a registered function, including the
+        module and path to the file it's defined in, the line number and the
+        docstring, if available.
+
+        name (str): Name of the registered function.
+        RETURNS (Dict[str, Union[str, int]]): The inormation about the function.
+        """
+        func = self.get(name)
+        _, line_no = inspect.getsourcelines(func)
+        return {
+            "module": inspect.getmodule(func).__name__,
+            "file": inspect.getfile(func),
+            "line_no": line_no,
+            "docstring": inspect.cleandoc(inspect.getdoc(func)),
+        }
 
 
 def check_exists(*namespace: str) -> bool:
