@@ -97,7 +97,7 @@ serialization remains easy – while still giving you full extensibility.
 Decorators normally run when modules are imported. Relying on this side-effect
 can sometimes lead to confusion, especially if there's no other reason the
 module would be imported. One solution is to use
-[entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points).
+[entry points](https://packaging.python.org/specifications/entry-points/).
 
 For instance, in [spaCy](https://spacy.io) we're starting to use function
 registries to make the pipeline components much more customizable. Let's say one
