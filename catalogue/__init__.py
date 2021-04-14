@@ -4,7 +4,7 @@ import inspect
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
 except ImportError:
-    import importlib_metadata  # type: ignore
+    from . import _importlib_metadata as importlib_metadata  # type: ignore
 
 # Only ever call this once for performance reasons
 AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()  # type: ignore
