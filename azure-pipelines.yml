@@ -79,4 +79,4 @@ jobs:
   - bash: |
       pip install hypothesis
       python -c "import catalogue; import hypothesis"
-    displayName: 'Test for conflicts"
+    displayName: 'Test for conflicts'
