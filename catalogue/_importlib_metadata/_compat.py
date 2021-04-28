@@ -40,10 +40,10 @@ def disable_stdlib_finder():
     def matches(finder):
         return getattr(
             finder, '__module__', None
-        ) == '_frozen_importlib_external' and hasattr(finder, 'find_distributions')
+        ) == '_frozen_importlib_external' and hasattr(finder, '_catalogue_find_distributions')
 
     for finder in filter(matches, sys.meta_path):  # pragma: nocover
-        del finder.find_distributions
+        del finder._catalogue_find_distributions
 
 
 class NullFinder:

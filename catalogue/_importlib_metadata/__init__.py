@@ -249,7 +249,7 @@ class Distribution:
     def _discover_resolvers():
         """Search the meta_path for resolvers."""
         declared = (
-            getattr(finder, 'find_distributions', None) for finder in sys.meta_path
+            getattr(finder, '_catalogue_find_distributions', None) for finder in sys.meta_path
         )
         return filter(None, declared)
 
@@ -427,7 +427,7 @@ class DistributionFinder(MetaPathFinder):
             return vars(self).get('path', sys.path)
 
     @abc.abstractmethod
-    def find_distributions(self, context=Context()):
+    def _catalogue_find_distributions(self, context=Context()):
         """
         Find distributions.
 
@@ -535,7 +535,7 @@ class MetadataPathFinder(NullFinder, DistributionFinder):
     of Python that do not have a PathFinder find_distributions().
     """
 
-    def find_distributions(self, context=DistributionFinder.Context()):
+    def _catalogue_find_distributions(self, context=DistributionFinder.Context()):
         """
         Find distributions.
 
