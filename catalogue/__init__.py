@@ -24,7 +24,7 @@ def create(*namespace: str, entry_points: bool = False) -> "Registry":
     RETURNS (Registry): The Registry object.
     """
     if check_exists(*namespace):
-        raise RegistryError("Namespace already exists: {}".format(namespace))
+        raise RegistryError(f"Namespace already exists: {namespace}")
     return Registry(namespace, entry_points=entry_points)
 
 
@@ -90,10 +90,11 @@ class Registry(object):
                 return from_entry_point
         namespace = list(self.namespace) + [name]
         if not check_exists(*namespace):
-            err = "Cant't find '{}' in registry {}. Available names: {}"
             current_namespace = " -> ".join(self.namespace)
             available = ", ".join(sorted(self.get_all().keys())) or "none"
-            raise RegistryError(err.format(name, current_namespace, available))
+            raise RegistryError(
+                f"Cant't find '{name}' in registry {current_namespace}. Available names: {available}"
+            )
         return _get(namespace)
 
     def get_all(self) -> Dict[str, Any]:
@@ -173,12 +174,12 @@ def _get(namespace: Sequence[str]) -> Any:
     """
     global REGISTRY
     if not all(isinstance(name, str) for name in namespace):
-        err = "Invalid namespace. Expected tuple of strings, but got: {}"
-        raise ValueError(err.format(namespace))
+        raise ValueError(
+            f"Invalid namespace. Expected tuple of strings, but got: {namespace}"
+        )
     namespace = tuple(namespace)
     if namespace not in REGISTRY:
-        err = "Can't get namespace {} (not in registry)".format(namespace)
-        raise RegistryError(err)
+        raise RegistryError(f"Can't get namespace {namespace} (not in registry)")
     return REGISTRY[namespace]
 
 
@@ -219,8 +220,7 @@ def _remove(namespace: Sequence[str]) -> Any:
     global REGISTRY
     namespace = tuple(namespace)
     if namespace not in REGISTRY:
-        err = "Can't get namespace {} (not in registry)".format(namespace)
-        raise RegistryError(err)
+        raise RegistryError(f"Can't get namespace {namespace} (not in registry)")
     removed = REGISTRY[namespace]
     del REGISTRY[namespace]
     return removed
