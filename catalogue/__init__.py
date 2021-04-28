@@ -88,6 +88,10 @@ class Registry(object):
             from_entry_point = self.get_entry_point(name)
             if from_entry_point:
                 return from_entry_point
+            # load all modules in entry points to make sure we register functions from 
+            # those modules
+            for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+                entry_point.load()
         namespace = list(self.namespace) + [name]
         if not check_exists(*namespace):
             err = "Cant't find '{}' in registry {}. Available names: {}"
