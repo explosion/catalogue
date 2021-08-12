@@ -24,7 +24,7 @@ from contextlib import suppress
 from importlib import import_module
 from importlib.abc import MetaPathFinder
 from itertools import starmap
-from typing import Any, List, TypeVar, Union
+from typing import Any, List, Mapping, TypeVar, Union
 
 
 __all__ = [
@@ -645,3 +645,18 @@ def requires(distribution_name):
     packaging.requirement.Requirement.
     """
     return distribution(distribution_name).requires
+
+
+def packages_distributions() -> Mapping[str, List[str]]:
+    """
+    Return a mapping of top-level packages to their
+    distributions.
+    >>> pkgs = packages_distributions()
+    >>> all(isinstance(dist, collections.abc.Sequence) for dist in pkgs.values())
+    True
+    """
+    pkg_to_dist = collections.defaultdict(list)
+    for dist in distributions():
+        for pkg in (dist.read_text('top_level.txt') or '').split():
+            pkg_to_dist[pkg].append(dist.metadata['Name'])
+    return dict(pkg_to_dist)
