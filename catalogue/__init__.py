@@ -137,7 +137,7 @@ class Registry(object):
                 return entry_point.load()
         return default
 
-    def find(self, name: str) -> Dict[str, Optional[Union[str, int, None]]]:
+    def find(self, name: str) -> Dict[str, Optional[Union[str, int]]]:
         """Find the information about a registered function, including the
         module and path to the file it's defined in, the line number and the
         docstring, if available.
@@ -148,12 +148,13 @@ class Registry(object):
         func = self.get(name)
         module = inspect.getmodule(func)
         # These calls will fail for Cython modules so we need to work around them
+        line_no: Optional[int] = None
+        file_name: Optional[str] = None
         try:
             _, line_no = inspect.getsourcelines(func)
             file_name = inspect.getfile(func)
         except (TypeError, ValueError):
-            line_no = None
-            file_name = None
+            pass
         docstring = inspect.getdoc(func)
         return {
             "module": module.__name__ if module else None,
