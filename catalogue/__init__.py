@@ -137,7 +137,7 @@ class Registry(object):
                 return entry_point.load()
         return default
 
-    def find(self, name: str) -> Dict[str, Optional[Union[str, int]]]:
+    def find(self, name: str) -> Dict[str, Optional[Union[str, int, None]]]:
         """Find the information about a registered function, including the
         module and path to the file it's defined in, the line number and the
         docstring, if available.
