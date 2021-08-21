@@ -146,12 +146,19 @@ class Registry(object):
         RETURNS (Dict[str, Optional[Union[str, int]]]): The function info.
         """
         func = self.get(name)
-        _, line_no = inspect.getsourcelines(func)
         module = inspect.getmodule(func)
+        # These calls will fail for Cython modules so we need to work around them
+        line_no: Optional[int] = None
+        file_name: Optional[str] = None
+        try:
+            _, line_no = inspect.getsourcelines(func)
+            file_name = inspect.getfile(func)
+        except (TypeError, ValueError):
+            pass
         docstring = inspect.getdoc(func)
         return {
             "module": module.__name__ if module else None,
-            "file": inspect.getfile(func),
+            "file": file_name,
             "line_no": line_no,
             "docstring": inspect.cleandoc(docstring) if docstring else None,
         }
