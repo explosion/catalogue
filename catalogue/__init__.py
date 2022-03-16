@@ -107,7 +107,7 @@ class Registry(object):
         result = {}
         if self.entry_points:
             result.update(self.get_entry_points())
-        for keys, value in REGISTRY.items():
+        for keys, value in REGISTRY.copy().items():
             if len(self.namespace) == len(keys) - 1 and all(
                 self.namespace[i] == keys[i] for i in range(len(self.namespace))
             ):
@@ -200,7 +200,7 @@ def _get_all(namespace: Sequence[str]) -> Dict[Tuple[str, ...], Any]:
     """
     global REGISTRY
     result = {}
-    for keys, value in REGISTRY.items():
+    for keys, value in REGISTRY.copy().items():
         if len(namespace) <= len(keys) and all(
             namespace[i] == keys[i] for i in range(len(namespace))
         ):
