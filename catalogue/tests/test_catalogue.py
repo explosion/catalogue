@@ -1,4 +1,5 @@
 import pytest
+import sys
 from pathlib import Path
 import catalogue
 
@@ -101,6 +102,7 @@ def test_create_multi_namespace():
     assert catalogue._get(("x", "y", "z")) == z
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Test is not yet updated for 3.10 importlib_metadata API")
 def test_entry_points():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
