@@ -131,7 +131,7 @@ def test_registry_find():
         pass
 
     info = test_registry.find(name)
-    assert info["module"] == "catalogue.tests.test_catalogue"
+    assert info["module"] == "catalogue.tests.test_02_catalogue"
     assert info["file"] == str(Path(__file__))
     assert info["docstring"] == "This is a registered function."
     assert info["line_no"]
