@@ -8,7 +8,8 @@ from typing import TypeVar, Callable, Any, Iterator
 try:
     from typing import Protocol
 except ImportError:
-    from typing_extensions import Protocol
+    # Ignoring type for mypy to avoid "Incompatible import" error (https://github.com/python/mypy/issues/4427).
+    from typing_extensions import Protocol  # type: ignore
 
 _DIn = TypeVar("_DIn")
 
