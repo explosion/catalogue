@@ -1,4 +1,4 @@
-from typing import Union, Dict, Any, Optional, List, Tuple, Callable, Type, Mapping, TypeVar, Protocol
+from typing import Union, Dict, Any, Optional, List, Tuple, Callable, Type, Mapping
 from typing import Iterable, Sequence, cast
 from types import GeneratorType
 from dataclasses import dataclass
