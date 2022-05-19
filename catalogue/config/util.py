@@ -3,7 +3,12 @@ import functools
 import shutil
 import tempfile
 from pathlib import Path
-from typing import TypeVar, Protocol, Callable, Any, Iterator, Generic
+from typing import TypeVar, Callable, Any, Iterator
+
+try:
+    from typing import Protocol
+except ImportError:
+    from typing_extensions import Protocol
 
 _DIn = TypeVar("_DIn")
 
