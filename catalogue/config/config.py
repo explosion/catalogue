@@ -12,7 +12,7 @@ from pydantic.main import ModelMetaclass
 from pydantic.fields import ModelField
 from wasabi import table
 import srsly
-import catalogue
+import catalogue.registry
 import inspect
 import io
 import numpy
@@ -410,7 +410,7 @@ class Config(dict):
                 if hasattr(value, "items"):
                     # Reference to a function with no arguments, serialize
                     # inline as a dict and don't create new section
-                    if registry.is_promise(value) and len(value) == 1 and is_kwarg:
+                    if catalogue_registry.is_promise(value) and len(value) == 1 and is_kwarg:
                         flattened.set(section_name, key, try_dump_json(value, node))
                     else:
                         queue.append((path + (key,), value))
@@ -695,15 +695,15 @@ class Promise:
     kwargs: Dict[str, Any]
 
 
-class registry(object):
+class catalogue_registry(object):
     # fmt: off
-    optimizers: Decorator = catalogue.create("catalogue", "optimizers", entry_points=True)
-    schedules: Decorator = catalogue.create("catalogue", "schedules", entry_points=True)
-    layers: Decorator = catalogue.create("catalogue", "layers", entry_points=True)
-    losses: Decorator = catalogue.create("catalogue", "losses", entry_points=True)
-    initializers: Decorator = catalogue.create("catalogue", "initializers", entry_points=True)
-    datasets: Decorator = catalogue.create("catalogue", "datasets", entry_points=True)
-    ops: Decorator = catalogue.create("catalogue", "ops", entry_points=True)
+    # optimizers: Decorator = catalogue.registry.create("catalogue", "optimizers", entry_points=True)
+    # schedules: Decorator = catalogue.registry.create("catalogue", "schedules", entry_points=True)
+    # layers: Decorator = catalogue.registry.create("catalogue", "layers", entry_points=True)
+    # losses: Decorator = catalogue.registry.create("catalogue", "losses", entry_points=True)
+    # initializers: Decorator = catalogue.registry.create("catalogue", "initializers", entry_points=True)
+    # datasets: Decorator = catalogue.registry.create("catalogue", "datasets", entry_points=True)
+    # ops: Decorator = catalogue.registry.create("catalogue", "ops", entry_points=True)
     # fmt: on
 
     @classmethod
@@ -711,8 +711,8 @@ class registry(object):
         """Create a new custom registry."""
         if hasattr(cls, registry_name):
             raise ValueError(f"Registry '{registry_name}' already exists")
-        reg: Decorator = catalogue.create(
-            "thinc", registry_name, entry_points=entry_points
+        reg: Decorator = catalogue.registry.create(
+            "catalogue", registry_name, entry_points=entry_points
         )
         setattr(cls, registry_name, reg)
 
@@ -1058,4 +1058,4 @@ class registry(object):
         return create_model("ArgModel", **sig_args)
 
 
-__all__ = ["Config", "registry", "ConfigValidationError"]
+__all__ = ["Config", "catalogue_registry", "ConfigValidationError"]

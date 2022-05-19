@@ -1,4 +1,3 @@
-import dataclasses
 import inspect
 
 import pytest
@@ -6,37 +5,11 @@ from typing import Iterable, Union, Optional, Callable, Dict, Any, Generic, Type
 from types import GeneratorType
 from pydantic import BaseModel, StrictBool, StrictFloat, PositiveInt, constr
 
-from catalogue.config import config
 from catalogue.config.config import ConfigValidationError, Config
 from catalogue.config.util import partial, make_tempdir, Generator
-import catalogue
 from catalogue.tests.util import Cat, my_registry
 import numpy
 import pickle
-
-
-
-@my_registry.cats.register("catsie.v1")
-def catsie_v1(evil: StrictBool, cute: bool = True) -> str:
-    if evil:
-        return "scratch!"
-    else:
-        return "meow"
-
-
-@my_registry.cats.register("catsie.v2")
-def catsie_v2(evil: StrictBool, cute: bool = True, cute_level: int = 1) -> str:
-    if evil:
-        return "scratch!"
-    else:
-        if cute_level > 2:
-            return "meow <3"
-        return "meow"
-
-
-@my_registry.cats("catsie.v3")
-def catsie_v3(arg: Cat) -> Cat:
-    return arg
 
 
 EXAMPLE_CONFIG = """

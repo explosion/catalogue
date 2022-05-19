@@ -24,11 +24,12 @@ class Cat(Generic[InT, OutT]):
     value_out: OutT
 
 
-class my_registry(config.registry):
-    cats = catalogue.create("tests", "cats", entry_points=False)
-    optimizers = catalogue.create("tests", "optimizers", entry_points=False)
-    schedules = catalogue.create("tests", "schedules", entry_points=False)
-    initializers = catalogue.create("tests", "initializers", entry_points=False)
+class my_registry(config.catalogue_registry):
+    cats = catalogue.registry.create("tests", "cats", entry_points=False)
+    optimizers = catalogue.registry.create("tests", "optimizers", entry_points=False)
+    schedules = catalogue.registry.create("tests", "schedules", entry_points=False)
+    initializers = catalogue.registry.create("tests", "initializers", entry_points=False)
+    layers = catalogue.registry.create("tests", "layers", entry_points=False)
 
 
 @my_registry.cats.register("catsie.v1")
