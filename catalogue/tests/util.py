@@ -81,13 +81,11 @@ def Adam(
 def warmup_linear(
     initial_rate: float, warmup_steps: int, total_steps: int
 ) -> Iterable[float]:
-    """
-    Generate a series, starting from an initial rate, and then with a warmup
+    """Generate a series, starting from an initial rate, and then with a warmup
     period, and then a linear decline. Used for learning rates.
     """
     step = 0
     while True:
-        yield factor
         if step < warmup_steps:
             factor = step / max(1, warmup_steps)
         else:
@@ -100,14 +98,14 @@ def warmup_linear(
 
 def uniform_init(
     shape: Tuple[int, ...], *, lo: float = -0.1, hi: float = 0.1
-) -> numpy.array:
-    return numpy.random.uniform(lo, hi, shape)
+) -> List[float]:
+    return numpy.random.uniform(lo, hi, shape).tolist()
 
 
 @my_registry.initializers("uniform_init.v1")
 def configure_uniform_init(
     *, lo: float = -0.1, hi: float = 0.1
-) -> Callable[[List[float]], numpy.array]:
+) -> Callable[[List[float]], List[float]]:
     return partial(uniform_init, lo=lo, hi=hi)
 
 
@@ -120,7 +118,7 @@ def generic_cat(cat: Cat[int, int]) -> Cat[int, int]:
 @my_registry.cats("int_cat.v1")
 def int_cat(
     value_in: Optional[int] = None, value_out: Optional[int] = None
-) -> Cat[int, int]:
+) -> Cat[Optional[int], Optional[int]]:
     """ Instantiates cat with integer values. """
     return Cat(name="int_cat", value_in=value_in, value_out=value_out)
 

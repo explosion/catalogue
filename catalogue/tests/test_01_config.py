@@ -10,8 +10,7 @@ from catalogue.config import config
 from catalogue.config.config import ConfigValidationError, Config
 from catalogue.config.util import partial, make_tempdir, Generator
 import catalogue
-# import catalogue.tests.registration
-from catalogue.tests.registration import Cat, my_registry
+from catalogue.tests.util import Cat, my_registry
 import numpy
 import pickle
 
@@ -590,7 +589,7 @@ def test_partials_from_config():
     # Make sure returned partial function has correct value set
     assert inspect.signature(func).parameters["lo"].default == -0.2
     # Actually call the function and verify
-    assert func((2, 3)).shape == (2, 3)
+    assert numpy.asarray(func((2, 3))).shape == (2, 3)
     # Make sure validation still works
     bad_cfg = {"test": {"@initializers": name, "lo": [0.5]}}
     with pytest.raises(ConfigValidationError):
