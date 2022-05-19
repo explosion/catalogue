@@ -6,3 +6,4 @@ numpy
 pydantic
 types-dataclasses
 typing_extensions
+wasabi
