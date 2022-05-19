@@ -7,3 +7,4 @@ pydantic
 types-dataclasses
 typing_extensions
 wasabi
+srsly
