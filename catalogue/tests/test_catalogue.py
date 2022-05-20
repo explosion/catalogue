@@ -1,3 +1,5 @@
+from typing import Dict, Tuple, Any
+
 import pytest
 import sys
 from pathlib import Path
@@ -6,13 +8,30 @@ import catalogue
 
 @pytest.fixture(autouse=True)
 def cleanup():
-    catalogue.registry.REGISTRY = {}
+    # Don't delete entries needed for config tests.
+    catalogue.registry.REGISTRY = filter_registry("config")
     yield
+
+
+def filter_registry(keep: str) -> Dict[Tuple[str], Any]:
+    """
+    Filters registry objects for tests.
+    test_mode (str): One of ("catalogue", "config"). Only entries in the registry belonging to the corresponding tests
+                     will be returned.
+
+    RETURNS (Dict[Tuple[str], Any]): entries in registry without those added for config tests.
+    """
+
+    assert keep in ("catalogue", "config")
+    return {
+        key: val for key, val in catalogue.registry.REGISTRY.items()
+        if ("config_tests" in key) is (keep == "config")
+    }
 
 
 def test_get_set():
     catalogue.registry._set(("a", "b", "c"), "test")
-    assert len(catalogue.registry.REGISTRY) == 1
+    assert len(filter_registry("catalogue")) == 1
     assert ("a", "b", "c") in catalogue.registry.REGISTRY
     assert catalogue.registry.check_exists("a", "b", "c")
     assert catalogue.registry.REGISTRY[("a", "b", "c")] == "test"
@@ -44,7 +63,7 @@ def test_registry_call():
     assert "foo" in test_registry
 
 
-def test_get_all(cleanup):
+def test_get_all():
     catalogue.registry._set(("a", "b", "c"), "test")
     catalogue.registry._set(("a", "b", "d"), "test")
     catalogue.registry._set(("a", "b"), "test")
@@ -61,7 +80,7 @@ def test_get_all(cleanup):
 
 
 def test_create_single_namespace():
-    assert catalogue.registry.REGISTRY == {}
+    assert filter_registry("catalogue") == {}
     test_registry = catalogue.registry.create("test")
 
     @test_registry.register("a")
@@ -103,25 +122,25 @@ def test_create_multi_namespace():
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason="Test is not yet updated for 3.10 importlib_metadata API")
-def test_entry_points(cleanup):
+def test_entry_points():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
     ep_string = "[options.entry_points]test_foo\n    bar = catalogue.registry:check_exists"
     ep = catalogue.registry.importlib_metadata.EntryPoint._from_text(ep_string)
     catalogue.registry.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
-    assert catalogue.registry.REGISTRY == {}
+    assert filter_registry("catalogue") == {}
     test_registry = catalogue.registry.create("test", "foo", entry_points=True)
     entry_points = test_registry.get_entry_points()
     assert "bar" in entry_points
     assert entry_points["bar"] == catalogue.registry.check_exists
     assert test_registry.get_entry_point("bar") == catalogue.registry.check_exists
-    assert catalogue.registry.REGISTRY == {}
+    assert filter_registry("catalogue") == {}
     assert test_registry.get("bar") == catalogue.registry.check_exists
     assert test_registry.get_all() == {"bar": catalogue.registry.check_exists}
     assert "bar" in test_registry
 
 
-def test_registry_find(cleanup):
+def test_registry_find():
     test_registry = catalogue.registry.create("test_registry_find")
     name = "a"
 
@@ -131,7 +150,7 @@ def test_registry_find(cleanup):
         pass
 
     info = test_registry.find(name)
-    assert info["module"] == "catalogue.tests.test_02_catalogue"
+    assert info["module"] == "catalogue.tests.test_catalogue"
     assert info["file"] == str(Path(__file__))
     assert info["docstring"] == "This is a registered function."
     assert info["line_no"]

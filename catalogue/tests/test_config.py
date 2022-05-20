@@ -1,12 +1,14 @@
 import inspect
 
 import pytest
-from typing import Iterable, Union, Optional, Callable, Dict, Any, Generic, TypeVar, List
+from typing import Dict, Optional, Iterable, Callable, Any, Union
 from types import GeneratorType
-from pydantic import BaseModel, StrictBool, StrictFloat, PositiveInt, constr
+from pydantic import BaseModel, StrictFloat, PositiveInt, constr
+from pydantic.types import StrictBool
 
+import catalogue.registry
 from catalogue.config.config import ConfigValidationError, Config
-from catalogue.config.util import partial, make_tempdir, Generator
+from catalogue.config.util import make_tempdir, Generator, partial
 from catalogue.tests.util import Cat, my_registry
 import numpy
 import pickle
@@ -79,6 +81,9 @@ warmup_steps = 10000
 total_steps = 100000
 """
 
+# @pytest.fixture(autouse=True)
+# def cleanup():
+#     yield
 
 class HelloIntsSchema(BaseModel):
     hello: int
@@ -172,6 +177,7 @@ def test_parse_args():
 
 
 def test_make_promise_schema():
+
     schema = my_registry.make_promise_schema(good_catsie)
     assert "evil" in schema.__fields__
     assert "cute" in schema.__fields__
