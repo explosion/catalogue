@@ -13,7 +13,7 @@ def cleanup():
     yield
 
 
-def filter_registry(keep: str) -> Dict[Tuple[str], Any]:
+def filter_registry(keep: str) -> Dict[Tuple[str, ...], Any]:
     """
     Filters registry objects for tests.
     test_mode (str): One of ("catalogue", "config"). Only entries in the registry belonging to the corresponding tests
