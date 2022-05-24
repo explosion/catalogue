@@ -6,8 +6,7 @@ from types import GeneratorType
 from pydantic import BaseModel, StrictFloat, PositiveInt, constr
 from pydantic.types import StrictBool
 
-import catalogue.registry
-from catalogue.config.config import ConfigValidationError, Config
+from catalogue import ConfigValidationError, Config
 from catalogue.config.util import make_tempdir, Generator, partial
 from catalogue.tests.util import Cat, my_registry
 import numpy
@@ -81,9 +80,6 @@ warmup_steps = 10000
 total_steps = 100000
 """
 
-# @pytest.fixture(autouse=True)
-# def cleanup():
-#     yield
 
 class HelloIntsSchema(BaseModel):
     hello: int
