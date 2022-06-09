@@ -19,7 +19,6 @@ import numpy
 import copy
 import re
 
-
 from .util import Decorator
 
 # Field used for positional arguments, e.g. [section.*.xyz]. The alias is
