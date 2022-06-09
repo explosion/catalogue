@@ -173,7 +173,6 @@ def test_parse_args():
 
 
 def test_make_promise_schema():
-
     schema = my_registry.make_promise_schema(good_catsie)
     assert "evil" in schema.__fields__
     assert "cute" in schema.__fields__
