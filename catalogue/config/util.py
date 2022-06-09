@@ -1,15 +1,16 @@
 import contextlib
 import functools
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 from typing import TypeVar, Callable, Any, Iterator
 
-try:
-    from typing import Protocol
-except ImportError:
+if sys.version_info < (3, 8):
     # Ignoring type for mypy to avoid "Incompatible import" error (https://github.com/python/mypy/issues/4427).
     from typing_extensions import Protocol  # type: ignore
+else:
+    from typing import Protocol
 
 _DIn = TypeVar("_DIn")
 
@@ -50,10 +51,3 @@ class Generator(Iterator):
         if not hasattr(v, "__iter__") and not hasattr(v, "__next__"):
             raise TypeError("not a valid iterator")
         return v
-
-
-@contextlib.contextmanager
-def make_tempdir():
-    d = Path(tempfile.mkdtemp())
-    yield d
-    shutil.rmtree(str(d))

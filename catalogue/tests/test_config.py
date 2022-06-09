@@ -7,8 +7,8 @@ from pydantic import BaseModel, StrictFloat, PositiveInt, constr
 from pydantic.types import StrictBool
 
 from catalogue import ConfigValidationError, Config
-from catalogue.config.util import make_tempdir, Generator, partial
-from catalogue.tests.util import Cat, my_registry
+from catalogue.config.util import Generator, partial
+from catalogue.tests.util import Cat, my_registry, make_tempdir
 import numpy
 import pickle
 
@@ -465,28 +465,6 @@ def test_positional_args_to_from_string():
     cfg = """[a]\n@cats = "catsie.v666"\n\n[a.*.foo]\n@cats = "catsie.v777"\ny = 3"""
     result = my_registry.resolve(Config().from_str(cfg))
     assert result == {"a": ("meowmeowmeow",)}
-
-
-# todo @RM thinc-only test?
-# def test_make_config_positional_args_dicts():
-#     cfg = {
-#         "hyper_params": {"n_hidden": 512, "dropout": 0.2, "learn_rate": 0.001},
-#         "model": {
-#             "@layers": "chain.v1",
-#             "*": {
-#                 "relu1": {"@layers": "Relu.v1", "nO": 512, "dropout": 0.2},
-#                 "relu2": {"@layers": "Relu.v1", "nO": 512, "dropout": 0.2},
-#                 "softmax": {"@layers": "Softmax.v1"},
-#             },
-#         },
-#         "optimizer": {"@optimizers": "Adam.v1", "learn_rate": 0.001},
-#     }
-#     resolved = my_registry.resolve(cfg)
-#     model = resolved["model"]
-#     X = numpy.ones((784, 1), dtype="f")
-#     model.initialize(X=X, Y=numpy.zeros((784, 1), dtype="f"))
-#     model.begin_update(X)
-#     model.finish_update(resolved["optimizer"])
 
 
 def test_validation_generators_iterable():
@@ -1399,30 +1377,3 @@ def test_config_overrides(greeting, value, expected):
     assert "${vars.a}" in str_cfg
     cfg = Config().from_str(str_cfg, overrides=overrides)
     assert expected in str(cfg)
-
-
-# todo @RM thinc-only test?
-# def test_arg_order_is_preserved():
-#     str_cfg = """
-#     [model]
-#
-#     [model.chain]
-#     @layers = "chain.v1"
-#
-#     [model.chain.*.hashembed]
-#     @layers = "HashEmbed.v1"
-#     nO = 8
-#     nV = 8
-#
-#     [model.chain.*.expand_window]
-#     @layers = "expand_window.v1"
-#     window_size = 1
-#     """
-#
-#     cfg = Config().from_str(str_cfg)
-#     resolved = my_registry.resolve(cfg)
-#     model = resolved["model"]["chain"]
-#
-#     # Fails when arguments are sorted, because expand_window
-#     # is sorted before hashembed.
-#     assert model.name == "hashembed>>expand_window"

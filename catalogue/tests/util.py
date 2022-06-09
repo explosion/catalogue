@@ -1,8 +1,11 @@
 """
 Registered functions used for config tests.
 """
-
+import contextlib
 import dataclasses
+import shutil
+import tempfile
+from pathlib import Path
 from typing import Iterable, List, Union, Generator, Callable, Tuple, Generic, TypeVar, Optional, Any
 
 import numpy
@@ -132,3 +135,10 @@ def make_my_optimizer(learn_rate: List[float], beta1: float):
 @my_registry.schedules("my_cool_repetitive_schedule.v1")
 def decaying(base_rate: float, repeat: int) -> List[float]:
     return repeat * [base_rate]
+
+
+@contextlib.contextmanager
+def make_tempdir():
+    d = Path(tempfile.mkdtemp())
+    yield d
+    shutil.rmtree(str(d))
