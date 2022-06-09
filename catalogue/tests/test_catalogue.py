@@ -1,9 +1,7 @@
 from typing import Dict, Tuple, Any
-
 import pytest
 import sys
 from pathlib import Path
-
 import catalogue
 
 
