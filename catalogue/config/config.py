@@ -695,16 +695,6 @@ class Promise:
 
 
 class catalogue_registry(object):
-    # fmt: off
-    # optimizers: Decorator = catalogue.registry.create("catalogue", "optimizers", entry_points=True)
-    # schedules: Decorator = catalogue.registry.create("catalogue", "schedules", entry_points=True)
-    # layers: Decorator = catalogue.registry.create("catalogue", "layers", entry_points=True)
-    # losses: Decorator = catalogue.registry.create("catalogue", "losses", entry_points=True)
-    # initializers: Decorator = catalogue.registry.create("catalogue", "initializers", entry_points=True)
-    # datasets: Decorator = catalogue.registry.create("catalogue", "datasets", entry_points=True)
-    # ops: Decorator = catalogue.registry.create("catalogue", "ops", entry_points=True)
-    # fmt: on
-
     @classmethod
     def create(cls, registry_name: str, entry_points: bool = False) -> None:
         """Create a new custom registry."""
