@@ -14,7 +14,7 @@ registry. This makes the object easy to serialize, because the name is a simple
 string. If you instead saved the function, you'd have to use Pickle for
 serialization, which has many drawbacks.
 
-_Configuration_ is a huge problem for machine-learning code because you may want to expose almost any
+_Configuration_ is a huge challenge for machine-learning code because you may want to expose almost any
 detail of any function as a hyperparameter. The setting you want to expose might be arbitrarily far
 down in your call stack, so the setting might need to pass all the way through the CLI or REST API,
 through any number of intermediate functions, affecting the interface of everything along the way.
