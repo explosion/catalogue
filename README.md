@@ -16,7 +16,7 @@ serialization, which has many drawbacks.
 
 _Configuration_ is a huge challenge for machine-learning code because you may want to expose almost any
 detail of any function as a hyperparameter. The setting you want to expose might be arbitrarily far
-down in your call stack, so the setting might need to pass all the way through the CLI or REST API,
+down in your call stack, so it might need to pass all the way through the CLI or REST API,
 through any number of intermediate functions, affecting the interface of everything along the way.
 And then once those settings are added, they become hard to remove later. Default values also
 become hard to change without breaking backwards compatibility.
