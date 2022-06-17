@@ -155,7 +155,7 @@ The config format has three main differences from Python’s built-in configpars
    them. This lets you express complex configurations, like a training pipeline where `batch_size` is populated by a
    function that yields floats (see schedules). Also see the section on registry integration for more details.
 
-There’s no pre-defined scheme you have to follow and how you set up the top-level sections is up to you. At the end of
+There’s no pre-defined scheme you have to follow; how you set up the top-level sections is up to you. At the end of
 it, you’ll receive a dictionary with the values that you can use in your script – whether it’s complete initialized
 functions, or just basic settings.
 
