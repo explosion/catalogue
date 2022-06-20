@@ -153,7 +153,7 @@ The config format has three main differences from Python’s built-in configpars
    function registry, load the function registered for that name and pass in the rest of the block as arguments. If type
    hints are available on the function, the argument values (and return value of the function) will be validated against
    them. This lets you express complex configurations, like a training pipeline where `batch_size` is populated by a
-   function that yields floats (see schedules).
+   function that yields floats.
 
 There’s no pre-defined scheme you have to follow; how you set up the top-level sections is up to you. At the end of
 it, you’ll receive a dictionary with the values that you can use in your script – whether it’s complete initialized
@@ -210,8 +210,8 @@ The Thinc documentation offers further information on the configuration system:
 - [using interpolation](https://thinc.ai/docs/usage-config#config-interpolation)
 - [using custom registries](https://thinc.ai/docs/usage-config#registries-custom)
 - [advanced type annotations with Pydantic](https://thinc.ai/docs/usage-config#advanced-types)
-- [using base schemas](https://thinc.ai/docs/usage-config#advanced-types)
-- [filling a configuration with defaults](https://thinc.ai/docs/usage-config#advanced-types)
+- [using base schemas](https://thinc.ai/docs/usage-config#advanced-types-base-schema)
+- [filling a configuration with defaults](https://thinc.ai/docs/usage-config#advanced-types-fill-defaults)
 
 ## ❓ FAQ
 
