@@ -641,7 +641,7 @@ class ConfigValidationError(ValueError):
         if self.desc:
             result.append(self.desc)
         if data:
-            result.append("\n".join(["\t".join(entry) for entry in data]))
+            result.append("\n".join([f"{entry[0]}\t{entry[1]}" for entry in data]))
         if self.config and self.show_config:
             result.append(f"{self.config}")
         return "\n\n" + "\n".join(result)
