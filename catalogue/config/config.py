@@ -10,7 +10,6 @@ from pathlib import Path
 from pydantic import BaseModel, create_model, ValidationError, Extra
 from pydantic.main import ModelMetaclass
 from pydantic.fields import ModelField
-from wasabi import table
 import srsly
 import catalogue.registry
 import inspect
