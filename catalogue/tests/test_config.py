@@ -3,14 +3,18 @@ import inspect
 import pytest
 from typing import Dict, Optional, Iterable, Callable, Any, Union
 from types import GeneratorType
+import pickle
+try:
+    import numpy
+except ImportError:
+    pass
 from pydantic import BaseModel, StrictFloat, PositiveInt, constr
 from pydantic.types import StrictBool
+from srsly.msgpack._msgpack_numpy import has_numpy
 
 from catalogue import ConfigValidationError, Config
 from catalogue.config.util import Generator, partial
 from catalogue.tests.util import Cat, my_registry, make_tempdir
-import numpy
-import pickle
 
 
 EXAMPLE_CONFIG = """
@@ -507,6 +511,7 @@ def test_objects_from_config():
     assert optimizer.learn_rate == [0.001] * 4
 
 
+@pytest.mark.skipif(not has_numpy, reason="needs numpy")
 def test_partials_from_config():
     """Test that functions registered with partial applications are handled
     correctly (e.g. initializers)."""
@@ -754,6 +759,7 @@ def test_fill_config_dict_return_type():
     assert result["not_evil"] is True
 
 
+@pytest.mark.skipif(not has_numpy, reason="needs numpy")
 def test_deepcopy_config():
     config = Config({"a": 1, "b": {"c": 2, "d": 3}})
     copied = config.copy()
@@ -955,6 +961,7 @@ def test_config_reserved_aliases():
         my_registry.resolve({"test": cfg})
 
 
+@pytest.mark.skipif(not has_numpy, reason="needs numpy")
 @pytest.mark.parametrize("d", [".", ":"])
 def test_config_no_interpolation(d):
     """Test that interpolation is correctly preserved. The parametrized
@@ -1081,6 +1088,7 @@ def test_config_deep_merge_variables():
     assert merged["a"]["c"] == 2
 
 
+@pytest.mark.skipif(not has_numpy, reason="needs numpy")
 def test_config_to_str_roundtrip():
     cfg = {"cfg": {"foo": False}}
     config_str = Config(cfg).to_str()

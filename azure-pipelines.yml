@@ -66,6 +66,7 @@ jobs:
 
   - script: |
       pip install -U -r requirements.txt
+      pip install numpy pathy
       python setup.py sdist
     displayName: 'Build sdist'
 
