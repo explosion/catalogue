@@ -6,11 +6,11 @@ from types import GeneratorType
 import pickle
 try:
     import numpy
+    has_numpy = True
 except ImportError:
-    pass
+    has_numpy = False
 from pydantic import BaseModel, StrictFloat, PositiveInt, constr
 from pydantic.types import StrictBool
-from srsly.msgpack._msgpack_numpy import has_numpy
 
 from catalogue import ConfigValidationError, Config
 from catalogue.config.util import Generator, partial
