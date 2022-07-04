@@ -2,7 +2,7 @@
 
 # catalogue: Lightweight function registries and configurations for your library
 
-`catalogue` is a tiny, zero-dependencies library that
+`catalogue` is a small library that
 
 - makes it easy to **add function (or object) registries** to your code
 - offers a **configuration system** letting you conveniently describe arbitrary trees of objects.
@@ -24,7 +24,7 @@ become hard to change without breaking backwards compatibility.
 To solve this problem, `catalogue` offers a config system that lets you easily describe arbitrary trees of objects.
 The objects can be created via function calls you register using a simple decorator syntax. You can even version the
 functions you create, allowing you to make improvements without breaking backwards compatibility. The most similar
-config system we’re aware of is Gin, which uses a similar syntax, and also allows you to link the configuration system
+config system we’re aware of is [Gin](https://github.com/google/gin-config), which uses a similar syntax, and also allows you to link the configuration system
 to functions in your code using a decorator. `catalogue`'s config system is simpler and emphasizes a different workflow via a
 subset of Gin’s functionality.
 
@@ -153,7 +153,7 @@ The config format has three main differences from Python’s built-in configpars
    function registry, load the function registered for that name and pass in the rest of the block as arguments. If type
    hints are available on the function, the argument values (and return value of the function) will be validated against
    them. This lets you express complex configurations, like a training pipeline where `batch_size` is populated by a
-   function that yields floats (see schedules). Also see the section on registry integration for more details.
+   function that yields floats.
 
 There’s no pre-defined scheme you have to follow; how you set up the top-level sections is up to you. At the end of
 it, you’ll receive a dictionary with the values that you can use in your script – whether it’s complete initialized
@@ -203,8 +203,15 @@ call it with the arguments `learn_rate` and `gamma`. If the function has type an
 input. For instance, if `learn_rate` is annotated as a float and the config defines a string, `catalogue` will raise an
 error.
 
-The [**Thinc documentation** provides further usage and background information](https://thinc.ai/docs/usage-config) on
-the configuration system.
+The Thinc documentation offers further information on the configuration system:
+
+- [recursive blocks](https://thinc.ai/docs/usage-config#registry-recursive)
+- [defining variable positional arguments](https://thinc.ai/docs/usage-config#registries-args)
+- [using interpolation](https://thinc.ai/docs/usage-config#config-interpolation)
+- [using custom registries](https://thinc.ai/docs/usage-config#registries-custom)
+- [advanced type annotations with Pydantic](https://thinc.ai/docs/usage-config#advanced-types)
+- [using base schemas](https://thinc.ai/docs/usage-config#advanced-types-base-schema)
+- [filling a configuration with defaults](https://thinc.ai/docs/usage-config#advanced-types-fill-defaults)
 
 ## ❓ FAQ
 

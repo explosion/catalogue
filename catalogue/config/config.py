@@ -10,7 +10,6 @@ from pathlib import Path
 from pydantic import BaseModel, create_model, ValidationError, Extra
 from pydantic.main import ModelMetaclass
 from pydantic.fields import ModelField
-from wasabi import table
 import srsly
 import catalogue.registry
 import inspect
@@ -642,7 +641,7 @@ class ConfigValidationError(ValueError):
         if self.desc:
             result.append(self.desc)
         if data:
-            result.append(table(data))
+            result.append("\n".join([f"{entry[0]}\t{entry[1]}" for entry in data]))
         if self.config and self.show_config:
             result.append(f"{self.config}")
         return "\n\n" + "\n".join(result)
