@@ -88,6 +88,9 @@ jobs:
       pip install dist/$SDIST
     displayName: 'Install from sdist'
 
+  - script: python -m pip install -U -r requirements.txt
+    displayName: "Install test requirements"
+
   - script: python -m pytest --pyargs catalogue
     displayName: 'Run tests'
 
