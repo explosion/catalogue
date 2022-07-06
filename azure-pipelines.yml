@@ -88,6 +88,10 @@ jobs:
       pip install dist/$SDIST
     displayName: 'Install from sdist'
 
+  - bash: |
+      python -c "import catalogue"
+    displayName: 'Test import'
+
   - script: python -m pip install -U -r requirements.txt
     displayName: "Install test requirements"
 
