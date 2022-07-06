@@ -1,4 +1,3 @@
-from typing import Dict, Tuple, Any
 import pytest
 import sys
 from pathlib import Path
@@ -7,31 +6,13 @@ import catalogue
 
 @pytest.fixture(autouse=True)
 def cleanup():
-    # Don't delete entries needed for config tests.
-    for key in set(catalogue.REGISTRY.keys()) - set(filter_registry("config").keys()):
-        catalogue.REGISTRY.pop(key)
+    catalogue.REGISTRY = {}
     yield
-
-
-def filter_registry(keep: str) -> Dict[Tuple[str, ...], Any]:
-    """
-    Filters registry objects for tests.
-    test_mode (str): One of ("catalogue", "config"). Only entries in the registry belonging to the corresponding tests
-                     will be returned.
-
-    RETURNS (Dict[Tuple[str], Any]): entries in registry without those added for config tests.
-    """
-
-    assert keep in ("catalogue", "config")
-    return {
-        key: val for key, val in catalogue.REGISTRY.items()
-        if ("config_tests" in key) is (keep == "config")
-    }
 
 
 def test_get_set():
     catalogue._set(("a", "b", "c"), "test")
-    assert len(filter_registry("catalogue")) == 1
+    assert len(catalogue.REGISTRY) == 1
     assert ("a", "b", "c") in catalogue.REGISTRY
     assert catalogue.check_exists("a", "b", "c")
     assert catalogue.REGISTRY[("a", "b", "c")] == "test"
@@ -80,8 +61,8 @@ def test_get_all():
 
 
 def test_create_single_namespace():
-    assert filter_registry("catalogue") == {}
     test_registry = catalogue.create("test")
+    assert catalogue.REGISTRY == {}
 
     @test_registry.register("a")
     def a():
@@ -125,16 +106,16 @@ def test_create_multi_namespace():
 def test_entry_points():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
-    ep_string = "[options.entry_points]test_foo\n    bar = catalogue.registry:check_exists"
+    ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
     ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
     catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
-    assert filter_registry("catalogue") == {}
+    assert catalogue.REGISTRY == {}
     test_registry = catalogue.create("test", "foo", entry_points=True)
     entry_points = test_registry.get_entry_points()
     assert "bar" in entry_points
     assert entry_points["bar"] == catalogue.check_exists
     assert test_registry.get_entry_point("bar") == catalogue.check_exists
-    assert filter_registry("catalogue") == {}
+    assert catalogue.REGISTRY == {}
     assert test_registry.get("bar") == catalogue.check_exists
     assert test_registry.get_all() == {"bar": catalogue.check_exists}
     assert "bar" in test_registry
