@@ -1,7 +1,31 @@
+from warnings import filterwarnings
+
 import pytest
-import sys
 from pathlib import Path
 import catalogue
+try:  # Python 3.8
+    import importlib.metadata as importlib_metadata
+except ImportError:
+    import importlib_metadata  # type: ignore
+from .._importlib_metadata import backports
+from configparser import ConfigParser
+from typing import List
+
+
+def _from_config(config: ConfigParser) -> List[importlib_metadata.EntryPoint]:
+    return [
+        importlib_metadata.EntryPoint(name=name, group=group, value=value)
+        for group in config.sections()
+        for name, value in config.items(group)
+    ]
+
+
+def _from_text(text: str) -> List[importlib_metadata.EntryPoint]:
+    config = ConfigParser(delimiters='=')
+    # case sensitive: https://stackoverflow.com/q/1611799/812183
+    config.optionxform = str
+    config.read_string(text)
+    return _from_config(config)
 
 
 @pytest.fixture(autouse=True)
@@ -102,12 +126,11 @@ def test_create_multi_namespace():
     assert catalogue._get(("x", "y", "z")) == z
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Test is not yet updated for 3.10 importlib_metadata API")
 def test_entry_points():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
     ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
-    ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
+    ep = _from_text(ep_string)
     catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
     assert catalogue.REGISTRY == {}
     test_registry = catalogue.create("test", "foo", entry_points=True)
@@ -135,3 +158,13 @@ def test_registry_find():
     assert info["file"] == str(Path(__file__))
     assert info["docstring"] == "This is a registered function."
     assert info["line_no"]
+
+
+@pytest.mark.issue(32)
+def test_selectable_group_interface():
+    """Checks if the SelectableGroups dict interface works with backports.
+    See https://github.com/python/importlib_metadata/pull/278 and
+    https://github.com/python/importlib_metadata/issues/298 for further context.
+    """
+    filterwarnings('error')
+    backports.entry_points().get("test")

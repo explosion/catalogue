@@ -1,13 +1,13 @@
 from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union
 import inspect
-
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
 except ImportError:
-    from . import _importlib_metadata as importlib_metadata  # type: ignore
+    import importlib_metadata  # type: ignore
+from ._importlib_metadata import backports
 
 # Only ever call this once for performance reasons
-AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()  # type: ignore
+AVAILABLE_ENTRY_POINTS = backports.entry_points()  # type: ignore
 
 # This is where functions will be registered
 REGISTRY: Dict[Tuple[str, ...], Any] = {}
