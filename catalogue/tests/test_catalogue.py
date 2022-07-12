@@ -23,7 +23,7 @@ def _from_config(config: ConfigParser) -> List[importlib_metadata.EntryPoint]:
 def _from_text(text: str) -> List[importlib_metadata.EntryPoint]:
     config = ConfigParser(delimiters='=')
     # case sensitive: https://stackoverflow.com/q/1611799/812183
-    config.optionxform = str
+    setattr(config, "optionxform", str)
     config.read_string(text)
     return _from_config(config)
 
