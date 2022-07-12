@@ -4,7 +4,7 @@ try:  # Python 3.8
     import importlib.metadata as importlib_metadata
 except ImportError:
     import importlib_metadata  # type: ignore
-from ._importlib_metadata import backports
+from _importlib_metadata import backports
 
 # Only ever call this once for performance reasons
 AVAILABLE_ENTRY_POINTS = backports.entry_points()  # type: ignore
