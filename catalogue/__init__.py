@@ -2,7 +2,7 @@ from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Unio
 import inspect
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     import importlib_metadata  # type: ignore
 from ._importlib_metadata import backports
 

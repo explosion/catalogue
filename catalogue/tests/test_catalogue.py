@@ -5,7 +5,7 @@ from pathlib import Path
 import catalogue
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     import importlib_metadata  # type: ignore
 from .._importlib_metadata import backports
 from configparser import ConfigParser
