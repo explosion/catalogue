@@ -1,10 +1,20 @@
-from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar
+from typing import List, Union
 import inspect
 
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
 except ImportError:
     from . import _importlib_metadata as importlib_metadata  # type: ignore
+
+try:  # Python 3.10
+    from importlib.metadata import SelectableGroups  # type: ignore
+except ImportError:
+
+    class _NotImplemented:
+        pass
+
+    SelectableGroups = _NotImplemented  # type: ignore
 
 # Only ever call this once for performance reasons
 AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()  # type: ignore
@@ -120,7 +130,7 @@ class Registry(object):
         RETURNS (Dict[str, Any]): Entry points, keyed by name.
         """
         result = {}
-        for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+        for entry_point in self._get_entry_points():
             result[entry_point.name] = entry_point.load()
         return result
 
@@ -132,10 +142,16 @@ class Registry(object):
         default (Any): The default value to return.
         RETURNS (Any): The loaded entry point or the default value.
         """
-        for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+        for entry_point in self._get_entry_points():
             if entry_point.name == name:
                 return entry_point.load()
         return default
+
+    def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
+        if isinstance(AVAILABLE_ENTRY_POINTS, SelectableGroups):
+            return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
+        else:  # dict
+            return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
 
     def find(self, name: str) -> Dict[str, Optional[Union[str, int]]]:
         """Find the information about a registered function, including the
