@@ -103,7 +103,7 @@ def test_create_multi_namespace():
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 10), reason="Test does not support >=3.10 importlib_metadata API")
-def test_entry_points_newer():
+def test_entry_points_older():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
     ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
@@ -122,7 +122,7 @@ def test_entry_points_newer():
 
 
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="Test does not support <3.10 importlib_metadata API")
-def test_entry_points_older():
+def test_entry_points_newer():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
     ep = catalogue.importlib_metadata.EntryPoint("bar", "catalogue:check_exists", "test_foo")
