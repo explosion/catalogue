@@ -94,7 +94,7 @@ jobs:
   - script: python -m pip install -U -r requirements.txt
     displayName: "Install test requirements"
 
-  - script: python -m pytest --pyargs catalogue
+  - script: python -m pytest --pyargs catalogue -Werror
     displayName: 'Run tests'
 
   - bash: |
