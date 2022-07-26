@@ -1,5 +1,5 @@
-from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, cast
-from typing import List, Union
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union
+from typing import List
 import inspect
 
 try:  # Python 3.8

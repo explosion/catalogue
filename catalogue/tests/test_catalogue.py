@@ -116,7 +116,10 @@ def _check_entry_points():
     assert "bar" in test_registry
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Test does not support >=3.10 importlib_metadata API")
+@pytest.mark.skipif(
+    sys.version_info >= (3, 10),
+    reason="Test does not support >=3.10 importlib_metadata API",
+)
 def test_entry_points_older():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
@@ -126,12 +129,19 @@ def test_entry_points_older():
     _check_entry_points()
 
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="Test does not support <3.10 importlib_metadata API")
+@pytest.mark.skipif(
+    sys.version_info < (3, 10),
+    reason="Test does not support <3.10 importlib_metadata API",
+)
 def test_entry_points_newer():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
-    ep = catalogue.importlib_metadata.EntryPoint("bar", "catalogue:check_exists", "test_foo")
-    catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = catalogue.importlib_metadata.EntryPoints([ep])
+    ep = catalogue.importlib_metadata.EntryPoint(
+        "bar", "catalogue:check_exists", "test_foo"
+    )
+    catalogue.AVAILABLE_ENTRY_POINTS[
+        "test_foo"
+    ] = catalogue.importlib_metadata.EntryPoints([ep])
     _check_entry_points()
 
 
