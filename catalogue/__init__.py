@@ -149,7 +149,7 @@ class Registry(object):
 
     def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
         if isinstance(AVAILABLE_ENTRY_POINTS, SelectableGroups):
-            return cast(SelectableGroups, AVAILABLE_ENTRY_POINTS).select(group=self.entry_point_namespace)
+            return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
         else:  # dict
             return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
 
