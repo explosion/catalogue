@@ -1,4 +1,4 @@
-from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, cast
 from typing import List, Union
 import inspect
 
@@ -149,7 +149,7 @@ class Registry(object):
 
     def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
         if isinstance(AVAILABLE_ENTRY_POINTS, SelectableGroups):
-            return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
+            return cast(AVAILABLE_ENTRY_POINTS, SelectableGroups).select(group=self.entry_point_namespace)
         else:  # dict
             return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
 
