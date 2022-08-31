@@ -108,19 +108,17 @@ class Registry(object):
         return _get(namespace)
 
     def get_all(self) -> Dict[str, Any]:
-        """Get a all functions for a given namespace.
+        """Get all functions belonging to this registry's namespace.
 
-        namespace (Tuple[str]): The namespace to get.
         RETURNS (Dict[str, Any]): The functions, keyed by name.
         """
         global REGISTRY
         result = {}
         if self.entry_points:
             result.update(self.get_entry_points())
+        # Create a copy of the global registry in case it gets modified during iteration.
         for keys, value in REGISTRY.copy().items():
-            if len(self.namespace) == len(keys) - 1 and all(
-                self.namespace[i] == keys[i] for i in range(len(self.namespace))
-            ):
+            if len(self.namespace) == len(keys) - 1 and keys[:-1] == self.namespace:
                 result[keys[-1]] = value
         return result
 
