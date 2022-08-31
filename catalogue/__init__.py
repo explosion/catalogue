@@ -116,7 +116,8 @@ class Registry(object):
         result = {}
         if self.entry_points:
             result.update(self.get_entry_points())
-        for keys, value in REGISTRY.items():
+        # Create a copy of the global registry in case it gets modified during iteration.
+        for keys, value in REGISTRY.copy().items():
             if len(self.namespace) == len(keys) - 1 and keys[:-1] == self.namespace:
                 result[keys[-1]] = value
         return result
