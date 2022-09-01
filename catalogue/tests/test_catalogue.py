@@ -1,12 +1,13 @@
 import pytest
 import sys
 from pathlib import Path
+from collections import defaultdict
 import catalogue
 
 
 @pytest.fixture(autouse=True)
 def cleanup():
-    catalogue.REGISTRY = {}
+    catalogue.REGISTRY = defaultdict(dict)
     yield
 
 
@@ -15,7 +16,7 @@ def test_get_set():
     assert len(catalogue.REGISTRY) == 1
     assert ("a", "b", "c") in catalogue.REGISTRY
     assert catalogue.check_exists("a", "b", "c")
-    assert catalogue.REGISTRY[("a", "b", "c")] == "test"
+    assert catalogue.REGISTRY[("a", "b", "c")] == {1: "test"}
     assert catalogue._get(("a", "b", "c")) == "test"
     with pytest.raises(catalogue.RegistryError):
         catalogue._get(("a", "b", "d"))
@@ -159,3 +160,24 @@ def test_registry_find():
     assert info["file"] == str(Path(__file__))
     assert info["docstring"] == "This is a registered function."
     assert info["line_no"]
+
+
+def test_register_get_version():
+    test_registry = catalogue.create("test_registry_versioning")
+    test_registry.register("test", func=lambda x: x)
+    assert test_registry.get("test")(10) == 10
+    test_registry.register("test.v1", func=lambda x: x + 1)
+    assert test_registry.get("test")(10) == 11
+    assert test_registry.get("test.v1")(10) == 11
+    assert test_registry.get("test", version=1)(10) == 11
+    test_registry.register("test.v2", func=lambda x: x + 2)
+    assert test_registry.get("test")(10) == 11
+    assert test_registry.get("test.v1")(10) == 11
+    assert test_registry.get("test", version=1)(10) == 11
+    assert test_registry.get("test.v2")(10) == 12
+    assert test_registry.get("test", version=2)(10) == 12
+    test_registry.register("test", func=lambda x: x * 5, version=3)
+    assert test_registry.get("test.v3")(10) == 50
+    test_registry.register("new", func=lambda x: x)
+    names, funcs = zip(*test_registry.get_all().items())
+    assert set(names) == {"test.v1", "test.v2", "test.v3", "new"}
