@@ -9,39 +9,48 @@ jobs:
 - job: 'Test'
   strategy:
     matrix:
-      Python27Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '2.7'
-      Python27Mac:
-        imageName: 'macos-10.13'
-        python.version: '2.7'
-      Python35Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.5'
-      Python35Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.5'
-      Python35Mac:
-        imageName: 'macos-10.13'
-        python.version: '3.5'
       Python36Linux:
-        imageName: 'ubuntu-16.04'
+        imageName: 'ubuntu-latest'
         python.version: '3.6'
       Python36Windows:
-        imageName: 'vs2017-win2016'
+        imageName: 'windows-2019'
         python.version: '3.6'
-      Python36Mac:
-        imageName: 'macos-10.13'
-        python.version: '3.6'
+      Python37Linux:
+        imageName: 'ubuntu-latest'
+        python.version: '3.7'
+      Python37Windows:
+        imageName: 'windows-latest'
+        python.version: '3.7'
+      Python37Mac:
+        imageName: 'macos-latest'
+        python.version: '3.7'
       Python38Linux:
-        imageName: 'ubuntu-16.04'
+        imageName: 'ubuntu-latest'
         python.version: '3.8'
       Python38Windows:
-        imageName: 'vs2017-win2016'
+        imageName: 'windows-latest'
         python.version: '3.8'
       Python38Mac:
-        imageName: 'macos-10.13'
+        imageName: 'macos-latest'
         python.version: '3.8'
+      Python39Linux:
+        imageName: 'ubuntu-latest'
+        python.version: '3.9'
+      Python39Windows:
+        imageName: 'windows-latest'
+        python.version: '3.9'
+      Python39Mac:
+        imageName: 'macos-latest'
+        python.version: '3.9'
+      Python310Linux:
+        imageName: 'ubuntu-latest'
+        python.version: '3.10'
+      Python310Windows:
+        imageName: 'windows-latest'
+        python.version: '3.10'
+      Python310Mac:
+        imageName: 'macos-latest'
+        python.version: '3.10'
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -56,16 +65,27 @@ jobs:
       pip install -U -r requirements.txt
       python setup.py sdist
     displayName: 'Build sdist'
+  - script: python -m mypy catalogue
+    displayName: 'Run mypy'
 
   - task: DeleteFiles@1
     inputs:
-      contents: 'catalogue.py'
+      contents: 'catalogue'
     displayName: 'Delete source directory'
 
+  - script: |
+      python -m pip freeze > installed.txt
+      python -m pip uninstall -y -r installed.txt
+    displayName: "Uninstall all packages"
   - bash: |
       SDIST=$(python -c "import os;print(os.listdir('./dist')[-1])" 2>&1)
       pip install dist/$SDIST
     displayName: 'Install from sdist'
+  - bash: |
+      python -c "import catalogue"
+    displayName: 'Test import'
+  - script: python -m pip install -U -r requirements.txt
+    displayName: "Install test requirements"
 
-  - script: python -m pytest test_catalogue.py
+  - script: python -m pytest --pyargs catalogue -Werror
     displayName: 'Run tests'
