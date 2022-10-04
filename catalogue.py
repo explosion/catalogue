@@ -9,6 +9,15 @@ try:  # Python 3.8
 except ImportError:
     import importlib_metadata
 
+try:  # Python 3.10
+    from importlib.metadata import SelectableGroups  # type: ignore
+except ImportError:
+
+    class _NotImplemented:
+        pass
+
+    SelectableGroups = _NotImplemented  # type: ignore
+
 if sys.version_info[0] == 2:
     basestring_ = basestring  # noqa: F821
 else:
@@ -123,7 +132,7 @@ class Registry(object):
         RETURNS (Dict[str, Any]): Entry points, keyed by name.
         """
         result = {}
-        for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+        for entry_point in self._get_entry_points():
             result[entry_point.name] = entry_point.load()
         return result
 
@@ -135,10 +144,16 @@ class Registry(object):
         default (Any): The default value to return.
         RETURNS (Any): The loaded entry point or the default value.
         """
-        for entry_point in AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, []):
+        for entry_point in self._get_entry_points():
             if entry_point.name == name:
                 return entry_point.load()
         return default
+
+    def _get_entry_points(self):
+        if isinstance(AVAILABLE_ENTRY_POINTS, SelectableGroups):
+            return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
+        else:  # dict
+            return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
 
 
 def check_exists(*namespace):
