@@ -7,6 +7,7 @@ trigger:
 jobs:
 
 - job: 'Test'
+  continueOnError: true
   strategy:
     matrix:
       Python36Linux:
