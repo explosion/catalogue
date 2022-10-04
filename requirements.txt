@@ -1,3 +1,2 @@
-importlib_metadata>=0.20,<5.0.0; python_version < "3.8"
 setuptools
 pytest>=4.6.5

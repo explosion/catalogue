@@ -7,7 +7,7 @@ import sys
 try:  # Python 3.8
     import importlib.metadata as importlib_metadata
 except ImportError:
-    import importlib_metadata
+    from . import _importlib_metadata as importlib_metadata  # type: ignore
 
 try:  # Python 3.10
     from importlib.metadata import SelectableGroups  # type: ignore
