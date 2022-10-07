@@ -1,3 +1,4 @@
-importlib_metadata>=0.20; python_version < "3.8"
+zipp>=0.5; python_version < "3.8"
+typing-extensions>=3.6.4; python_version < "3.8"
 setuptools
 pytest>=4.6.5

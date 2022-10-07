@@ -1,6 +1,7 @@
 # coding: utf8
 from __future__ import unicode_literals
 
+import sys
 import pytest
 import catalogue
 
@@ -103,12 +104,8 @@ def test_create_multi_namespace():
     assert catalogue._get(("x", "y", "z")) == z
 
 
-def test_entry_points():
-    # Create a new EntryPoint object by pretending we have a setup.cfg and
-    # use one of catalogue's util functions as the advertised function
-    ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
-    ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
-    catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
+def _check_entry_points():
+    # Check entry points for test_entry_points_older() and test_entry_points_newer().
     assert catalogue.REGISTRY == {}
     test_registry = catalogue.create("test", "foo", entry_points=True)
     entry_points = test_registry.get_entry_points()
@@ -119,3 +116,32 @@ def test_entry_points():
     assert test_registry.get("bar") == catalogue.check_exists
     assert test_registry.get_all() == {"bar": catalogue.check_exists}
     assert "bar" in test_registry
+
+
+@pytest.mark.skipif(
+    sys.version_info >= (3, 10),
+    reason="Test does not support >=3.10 importlib_metadata API",
+)
+def test_entry_points_older():
+    # Create a new EntryPoint object by pretending we have a setup.cfg and
+    # use one of catalogue's util functions as the advertised function
+    ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
+    ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
+    catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
+    _check_entry_points()
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 10),
+    reason="Test does not support <3.10 importlib_metadata API",
+)
+def test_entry_points_newer():
+    # Create a new EntryPoint object by pretending we have a setup.cfg and
+    # use one of catalogue's util functions as the advertised function
+    ep = catalogue.importlib_metadata.EntryPoint(
+        "bar", "catalogue:check_exists", "test_foo"
+    )
+    catalogue.AVAILABLE_ENTRY_POINTS[
+        "test_foo"
+    ] = catalogue.importlib_metadata.EntryPoints([ep])
+    _check_entry_points()
