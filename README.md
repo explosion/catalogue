@@ -27,8 +27,9 @@ pip install catalogue
 conda install -c conda-forge catalogue
 ```
 
-> ⚠️ **Important note:** `catalogue` v2.0+ is only compatible with Python 3.6+.
-> For Python 2.7+ compatibility, use `catalogue` v1.x.
+> ⚠️ **Important note:** `catalogue` v3.0+ is only compatible with Python 3.8+.
+> For Python 3.6+ compatibility, use `catalogue` v2.x and for Python 2.7+
+> compatibility, use `catalogue` v1.x.
 
 ## 👩‍💻 Usage
 
