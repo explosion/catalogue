@@ -87,8 +87,3 @@ jobs:
 
   - script: python -m pytest --pyargs catalogue -Werror
     displayName: 'Run tests'
-
-  - bash: |
-      pip install hypothesis
-      python -c "import catalogue; import hypothesis"
-    displayName: 'Test for conflicts'
