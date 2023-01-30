@@ -1,11 +1,7 @@
 from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union
 from typing import List
 import inspect
-
-try:  # Python 3.8
-    import importlib.metadata as importlib_metadata
-except ImportError:
-    from . import _importlib_metadata as importlib_metadata  # type: ignore
+import importlib.metadata
 
 try:  # Python 3.10
     from importlib.metadata import SelectableGroups  # type: ignore
@@ -17,7 +13,7 @@ except ImportError:
     SelectableGroups = _NotImplemented  # type: ignore
 
 # Only ever call this once for performance reasons
-AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()  # type: ignore
+AVAILABLE_ENTRY_POINTS = importlib.metadata.entry_points()  # type: ignore
 
 # This is where functions will be registered
 REGISTRY: Dict[Tuple[str, ...], Any] = {}
@@ -145,7 +141,7 @@ class Registry(object):
                 return entry_point.load()
         return default
 
-    def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
+    def _get_entry_points(self) -> List[importlib.metadata.EntryPoint]:
         if isinstance(AVAILABLE_ENTRY_POINTS, SelectableGroups):
             return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
         else:  # dict

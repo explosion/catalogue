@@ -1,3 +1,4 @@
+import importlib.metadata
 import pytest
 import sys
 from pathlib import Path
@@ -124,7 +125,7 @@ def test_entry_points_older():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
     ep_string = "[options.entry_points]test_foo\n    bar = catalogue:check_exists"
-    ep = catalogue.importlib_metadata.EntryPoint._from_text(ep_string)
+    ep = importlib.metadata.EntryPoint._from_text(ep_string)
     catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = ep
     _check_entry_points()
 
@@ -136,12 +137,8 @@ def test_entry_points_older():
 def test_entry_points_newer():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
     # use one of catalogue's util functions as the advertised function
-    ep = catalogue.importlib_metadata.EntryPoint(
-        "bar", "catalogue:check_exists", "test_foo"
-    )
-    catalogue.AVAILABLE_ENTRY_POINTS[
-        "test_foo"
-    ] = catalogue.importlib_metadata.EntryPoints([ep])
+    ep = importlib.metadata.EntryPoint("bar", "catalogue:check_exists", "test_foo")
+    catalogue.AVAILABLE_ENTRY_POINTS["test_foo"] = importlib.metadata.EntryPoints([ep])
     _check_entry_points()
 
 
