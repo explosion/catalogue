@@ -56,8 +56,9 @@ jobs:
       architecture: 'x64'
 
   - script: |
-      pip install -U -r requirements.txt
-      python setup.py sdist
+      python -m pip install -U build pip setuptools
+      python -m pip install -U -r requirements.txt
+      python -m build --sdist
     displayName: 'Build sdist'
 
   - script: python -m mypy catalogue
@@ -78,8 +79,7 @@ jobs:
       pip install dist/$SDIST
     displayName: 'Install from sdist'
 
-  - bash: |
-      python -c "import catalogue"
+  - script: python -c "import catalogue"
     displayName: 'Test import'
 
   - script: python -m pip install -U -r requirements.txt
