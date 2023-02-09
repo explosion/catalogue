@@ -9,7 +9,7 @@ jobs:
   tests:
     name: Test
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python_version: ["3.8", "3.9", "3.10", "3.11"]
@@ -24,7 +24,6 @@ jobs:
         with:
           python-version: ${{ matrix.python_version }}
           architecture: x64
-          cache: "pip"
 
       - name: Build sdist
         run: |
@@ -36,9 +35,8 @@ jobs:
         run: python -m mypy catalogue
 
       - name: Delete source directory
-        uses: JesseTG/rm@v1.0.3
-        with:
-          path: catalogue
+        run: rm -rf catalogue
+        shell: bash
 
       - name: Uninstall all packages
         run: |
