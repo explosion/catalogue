@@ -13,7 +13,7 @@ def cleanup():
 
 def test_get_set():
     catalogue._set(("a", "b", "c"), "test")
-    assert len(catalogue.REGISTRY) == 1
+    assert len(catalogue.REGISTRY) == 2
     assert ("a", "b", "c") in catalogue.REGISTRY
     assert catalogue.check_exists("a", "b", "c")
     assert catalogue.REGISTRY[("a", "b", "c")] == "test"
