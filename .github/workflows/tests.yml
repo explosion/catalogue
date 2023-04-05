@@ -10,8 +10,8 @@ on:
       - "*.md"
 
 env:
-  MODULE_NAME: catalogue
-  RUN_MYPY: true
+  MODULE_NAME: 'catalogue'
+  RUN_MYPY: 'true'
 
 jobs:
   tests:
