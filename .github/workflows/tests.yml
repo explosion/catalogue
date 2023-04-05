@@ -6,7 +6,7 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 env:
-  MODULE_NAME: "catalogue"
+  MODULE_NAME: catalogue
   RUN_MYPY: true
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run mypy
         shell: bash
-        if: ${{ env.RUN_MYPY == true }}
+        if: ${{ env.RUN_MYPY == "true" }}
         run: |
           python -m mypy $MODULE_NAME
 
