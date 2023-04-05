@@ -2,8 +2,12 @@ name: tests
 
 on:
   push:
+    paths-ignore:
+      - "*.md"
   pull_request:
     types: [opened, synchronize, reopened, edited]
+    paths-ignore:
+      - "*.md"
 
 env:
   MODULE_NAME: catalogue
@@ -12,6 +16,7 @@ env:
 jobs:
   tests:
     name: Test
+    if: github.repository_owner == 'explosion'
     strategy:
       fail-fast: false
       matrix:
