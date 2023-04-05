@@ -7,7 +7,7 @@ on:
 
 env:
   MODULE_NAME: "catalogue"
-  RUN_MYPY: false
+  RUN_MYPY: true
 
 jobs:
   tests:
