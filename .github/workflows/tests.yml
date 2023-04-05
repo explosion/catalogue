@@ -39,7 +39,6 @@ jobs:
         shell: bash
         if: ${{ env.RUN_MYPY == true }}
         run: |
-          echo $RUN_MYPY
           python -m mypy $MODULE_NAME
 
       - name: Delete source directory
