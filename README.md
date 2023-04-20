@@ -11,7 +11,7 @@ registry. This makes the object easy to serialize, because the name is a simple
 string. If you instead saved the function, you'd have to use Pickle for
 serialization, which has many drawbacks.
 
-[![Azure Pipelines](https://img.shields.io/azure-devops/build/explosion-ai/public/14/master.svg?logo=azure-pipelines&style=flat-square&label=build)](https://dev.azure.com/explosion-ai/public/_build?definitionId=14)
+[![tests](https://github.com/explosion/catalogue/actions/workflows/tests.yml/badge.svg)](https://github.com/explosion/catalogue/actions/workflows/tests.yml)
 [![Current Release Version](https://img.shields.io/github/v/release/explosion/catalogue.svg?style=flat-square&include_prereleases&logo=github)](https://github.com/explosion/catalogue/releases)
 [![pypi Version](https://img.shields.io/pypi/v/catalogue.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/catalogue/)
 [![conda Version](https://img.shields.io/conda/vn/conda-forge/catalogue.svg?style=flat-square&logo=conda-forge&logoColor=white)](https://anaconda.org/conda-forge/catalogue)
@@ -275,14 +275,13 @@ custom_architecture = architectures.get_entry_point("custom_architecture")
 
 #### <kbd>method</kbd> `Registry.find`
 
-Find the information about a registered function, including the
-module and path to the file it's defined in, the line number and the
-docstring, if available.
+Find the information about a registered function, including the module and path
+to the file it's defined in, the line number and the docstring, if available.
 
-| Argument    | Type | Description                                      |
-| ----------- | ---- | ------------------------------------------------ |
-| `name`      | str  | Name of the registered function.                     |
-| **RETURNS** | Dict[str, Union[str, int]]  | The information about the function.    |
+| Argument    | Type                       | Description                         |
+| ----------- | -------------------------- | ----------------------------------- |
+| `name`      | str                        | Name of the registered function.    |
+| **RETURNS** | Dict[str, Union[str, int]] | The information about the function. |
 
 ```python
 import catalogue
