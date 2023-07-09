@@ -116,7 +116,7 @@ you don't need to rely on the import side-effects.
 Create a new registry for a given namespace. Returns a setter function that can
 be used as a decorator or called with a name and `func` keyword argument. If
 `entry_points=True` is set, the registry will check for
-[Python entry points](https://packaging.python.org/tutorials/packaging-projects/#entry-points)
+[Python entry points](https://setuptools.pypa.io/en/latest/userguide/entry_point.html)
 advertised for the given namespace, e.g. the entry point group
 `spacy_architectures` for the namespace `"spacy", "architectures"`, in
 `Registry.get` and `Registry.get_all`. This allows other packages to
