@@ -7,15 +7,6 @@ try:  # Python 3.8
 except ImportError:
     from . import _importlib_metadata as importlib_metadata  # type: ignore
 
-try:  # Python 3.10
-    from importlib.metadata import SelectableGroups  # type: ignore
-except ImportError:
-
-    class _NotImplemented:
-        pass
-
-    SelectableGroups = _NotImplemented  # type: ignore
-
 # Only ever call this once for performance reasons
 AVAILABLE_ENTRY_POINTS = importlib_metadata.entry_points()  # type: ignore
 
@@ -148,7 +139,7 @@ class Registry(object):
         return default
 
     def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
-        if isinstance(AVAILABLE_ENTRY_POINTS, SelectableGroups):
+        if hasattr(AVAILABLE_ENTRY_POINTS, "select"):
             return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
         else:  # dict
             return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
