@@ -131,8 +131,8 @@ def test_entry_points_older():
 
 
 @pytest.mark.skipif(
-    sys.version_info < (3, 10),
-    reason="Test does not support <3.10 importlib_metadata API",
+    sys.version_info < (3, 10) or sys.version_info >= (3, 12),
+    reason="Test only supports python 3.10 and 3.11 importlib_metadata API",
 )
 def test_entry_points_newer():
     # Create a new EntryPoint object by pretending we have a setup.cfg and
