@@ -1,4 +1,5 @@
 from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union, Generic
+from types import ModuleType, MethodType, FunctionType, TracebackType, FrameType, CodeType
 from typing import List
 import inspect
 
@@ -158,6 +159,9 @@ class Registry(Generic[InFunc]):
         line_no: Optional[int] = None
         file_name: Optional[str] = None
         try:
+            if not isinstance(func, (ModuleType, MethodType, FunctionType, TracebackType, FrameType, CodeType, type)):
+                raise TypeError(f"func type {type(func)} is not a valid type for inspect.getsourcelines()")
+
             _, line_no = inspect.getsourcelines(func)
             file_name = inspect.getfile(func)
         except (TypeError, ValueError):
