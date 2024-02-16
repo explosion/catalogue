@@ -1,4 +1,4 @@
-from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union, Generic
 from typing import List
 import inspect
 
@@ -29,7 +29,7 @@ def create(*namespace: str, entry_points: bool = False) -> "Registry":
     return Registry(namespace, entry_points=entry_points)
 
 
-class Registry(object):
+class Registry(Generic[InFunc]):
     def __init__(self, namespace: Sequence[str], entry_points: bool = False) -> None:
         """Initialize a new registry.
 
@@ -51,7 +51,7 @@ class Registry(object):
         return has_entry_point or namespace in REGISTRY
 
     def __call__(
-        self, name: str, func: Optional[Any] = None
+        self, name: str, func: Optional[InFunc] = None
     ) -> Callable[[InFunc], InFunc]:
         """Register a function for a given namespace. Same as Registry.register.
 
@@ -62,7 +62,7 @@ class Registry(object):
         return self.register(name, func=func)
 
     def register(
-        self, name: str, *, func: Optional[Any] = None
+        self, name: str, *, func: Optional[InFunc] = None
     ) -> Callable[[InFunc], InFunc]:
         """Register a function for a given namespace.
 
@@ -79,7 +79,7 @@ class Registry(object):
             return do_registration(func)
         return do_registration
 
-    def get(self, name: str) -> Any:
+    def get(self, name: str) -> InFunc:
         """Get the registered function for a given name.
 
         name (str): The name.
@@ -98,7 +98,7 @@ class Registry(object):
             )
         return _get(namespace)
 
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> Dict[str, InFunc]:
         """Get a all functions for a given namespace.
 
         namespace (Tuple[str]): The namespace to get.
@@ -115,7 +115,7 @@ class Registry(object):
                 result[keys[-1]] = value
         return result
 
-    def get_entry_points(self) -> Dict[str, Any]:
+    def get_entry_points(self) -> Dict[str, InFunc]:
         """Get registered entry points from other packages for this namespace.
 
         RETURNS (Dict[str, Any]): Entry points, keyed by name.
@@ -125,7 +125,7 @@ class Registry(object):
             result[entry_point.name] = entry_point.load()
         return result
 
-    def get_entry_point(self, name: str, default: Optional[Any] = None) -> Any:
+    def get_entry_point(self, name: str, default: Optional[InFunc] = None) -> InFunc:
         """Check if registered entry point is available for a given name in the
         namespace and load it. Otherwise, return the default value.
 
