@@ -1,4 +1,4 @@
-from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union, Generic
+from typing import Sequence, Any, Dict, Tuple, Callable, Optional, TypeVar, Union, Generic, Type
 from types import ModuleType, MethodType, FunctionType, TracebackType, FrameType, CodeType
 from typing import List
 import inspect
@@ -16,9 +16,9 @@ REGISTRY: Dict[Tuple[str, ...], Any] = {}
 
 
 InFunc = TypeVar("InFunc")
+S = TypeVar('S')
 
-
-def create(*namespace: str, entry_points: bool = False) -> "Registry":
+def create(*namespace: str, entry_points: bool = False, generic_type: Optional[Type[S]] = None) -> "Registry[S]":
     """Create a new registry.
 
     *namespace (str): The namespace, e.g. "spacy" or "spacy", "architectures".
@@ -27,7 +27,11 @@ def create(*namespace: str, entry_points: bool = False) -> "Registry":
     """
     if check_exists(*namespace):
         raise RegistryError(f"Namespace already exists: {namespace}")
-    return Registry(namespace, entry_points=entry_points)
+
+    if generic_type is None:
+        return Registry[Any](namespace, entry_points=entry_points)
+    else:
+        return Registry[S](namespace, entry_points=entry_points)
 
 
 class Registry(Generic[InFunc]):
@@ -53,7 +57,7 @@ class Registry(Generic[InFunc]):
 
     def __call__(
         self, name: str, func: Optional[InFunc] = None
-    ) -> Callable[[InFunc], InFunc]:
+    ) -> Union[Callable[[InFunc], InFunc], InFunc]:
         """Register a function for a given namespace. Same as Registry.register.
 
         name (str): The name to register under the namespace.
@@ -64,7 +68,7 @@ class Registry(Generic[InFunc]):
 
     def register(
         self, name: str, *, func: Optional[InFunc] = None
-    ) -> Callable[[InFunc], InFunc]:
+    ) -> Union[Callable[[InFunc], InFunc], InFunc]:
         """Register a function for a given namespace.
 
         name (str): The name to register under the namespace.
@@ -139,10 +143,11 @@ class Registry(Generic[InFunc]):
                 return entry_point.load()
         return default
 
-    def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
+    def _get_entry_points(self) -> Union[List[importlib_metadata.EntryPoint], importlib_metadata.EntryPoints]:
         if hasattr(AVAILABLE_ENTRY_POINTS, "select"):
             return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
         else:  # dict
+            assert isinstance(AVAILABLE_ENTRY_POINTS, dict)
             return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
 
     def find(self, name: str) -> Dict[str, Optional[Union[str, int]]]:
@@ -173,7 +178,6 @@ class Registry(Generic[InFunc]):
             "line_no": line_no,
             "docstring": inspect.cleandoc(docstring) if docstring else None,
         }
-
 
 def check_exists(*namespace: str) -> bool:
     """Check if a namespace exists.
