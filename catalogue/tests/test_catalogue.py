@@ -159,3 +159,31 @@ def test_registry_find():
     assert info["file"] == str(Path(__file__))
     assert info["docstring"] == "This is a registered function."
     assert info["line_no"]
+
+def test_registry_find_module():
+    import json
+
+    test_registry = catalogue.create("test_registry_find_module")
+
+    test_registry.register("json", func=json)
+
+    info = test_registry.find("json")
+    assert info["module"] == "json"
+    assert info["file"] == json.__file__
+    assert info["docstring"] == json.__doc__.strip('\n')
+    assert info["line_no"] == 0
+
+def test_registry_find_class():
+    test_registry = catalogue.create("test_registry_find_class")
+
+    class TestClass:
+        """This is a registered class."""
+        pass
+
+    test_registry.register("test_class", func=TestClass)
+
+    info = test_registry.find("test_class")
+    assert info["module"] == "catalogue.tests.test_catalogue"
+    assert info["file"] == str(Path(__file__))
+    assert info["docstring"] == TestClass.__doc__
+    assert info["line_no"]
