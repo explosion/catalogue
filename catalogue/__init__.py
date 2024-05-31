@@ -99,7 +99,7 @@ class Registry(Generic[InFunc]):
             current_namespace = " -> ".join(self.namespace)
             available = ", ".join(sorted(self.get_all().keys())) or "none"
             raise RegistryError(
-                f"Cant't find '{name}' in registry {current_namespace}. Available names: {available}"
+                f"Can't find '{name}' in registry {current_namespace}. Available names: {available}"
             )
         return _get(namespace)
 
