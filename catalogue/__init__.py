@@ -99,9 +99,8 @@ class Registry(object):
         return _get(namespace)
 
     def get_all(self) -> Dict[str, Any]:
-        """Get a all functions for a given namespace.
+        """Get all functions for a given namespace.
 
-        namespace (Tuple[str]): The namespace to get.
         RETURNS (Dict[str, Any]): The functions, keyed by name.
         """
         global REGISTRY
