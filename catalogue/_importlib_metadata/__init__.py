@@ -280,7 +280,7 @@ class Distribution:
             # (which points to the egg-info file) attribute unchanged.
             or self.read_text('')
         )
-        return email.message_from_string(text)
+        return email.message_from_string(text)  # type: ignore
 
     @property
     def version(self):

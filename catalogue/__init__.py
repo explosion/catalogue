@@ -140,9 +140,9 @@ class Registry(object):
 
     def _get_entry_points(self) -> List[importlib_metadata.EntryPoint]:
         if hasattr(AVAILABLE_ENTRY_POINTS, "select"):
-            return AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace)
-        else:  # dict
-            return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])
+            return list(AVAILABLE_ENTRY_POINTS.select(group=self.entry_point_namespace))
+        else:  # dict, before Python 3.10
+            return AVAILABLE_ENTRY_POINTS.get(self.entry_point_namespace, [])  # type: ignore
 
     def find(self, name: str) -> Dict[str, Optional[Union[str, int]]]:
         """Find the information about a registered function, including the
